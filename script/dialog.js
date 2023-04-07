@@ -160,22 +160,123 @@ class DIALOG {
         const dialogUUID = crypto.randomUUID();
 
         this.dialogBone.innerHTML = `
-        <section class="radio-content">
-            <div class="radio-device">
-                Funkgerät
-            </div>
-            <div class="radio-response">
-                <div class="radio-msg">
-                    <div class="radio-sender">
-                        <p class="sender-name">Florian 11/49/1</p>
-                        <p class="sender-status">3</p>
+        <article class="dialog-item">
+            <header class="dialog-head">
+                <div class="header-text">
+                    <p>
+                        Funk
+                    </p>
+                </div>
+                <div class="header-ui">
+                    <button class="close-dialog" id="close-dialog">
+                        <p>ESC</p>
+                        <span class="material-symbols-outlined">
+                            cancel
+                        </span>
+                    </button>    
+                </div>
+            </header>
+
+            <section class="radio-content">
+                <div class="radio-device">
+                    <div class="radio-preview">
+                        Leitstelle für FL BE 83/8/8
                     </div>
-                    <div class="radio-msg-content">
-                        <a href="#" class="msg-destination">Tragehilfe, Rettungsdienst</a>
+                    <div class="radio-code">
+                        <span class="radio-code-digit">1</span>
+                        <span class="radio-code-digit">2</span>
+                        <span class="radio-code-digit">3</span>
+                        <span class="radio-code-digit">4</span>
+                        <span class="radio-code-digit">5</span>
+                        <span class="radio-code-digit">6</span>
+                        <span class="radio-code-digit">7</span>
+                        <span class="radio-code-digit">8</span>
+                        <span class="radio-code-digit">9</span>
+                        <span class="radio-code-digit material-symbols-outlined" id="cancel-radio">
+                            call_end
+                        </span>
+                        <span class="radio-code-digit">0</span>
+                        <span class="radio-code-digit material-symbols-outlined" id="send-radio">
+                            call
+                        </span>
                     </div>
                 </div>
-            </div>
-        </section >
+                
+                <div class="radio-response">
+                    <div class="radio-msg">
+                        <div class="radio-sender">
+                            <p class="sender-name">FL POTS 15/34/2</p>
+                            <p class="sender-status status-3">3</p>
+                        </div>
+                        <div class="radio-msg-content">
+                            <span>Anfahrt:</span>
+                            <a href="#" class="msg-destination">Tragehilfe, Rettungsdienst (#3541)</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="radio-response">
+                    <div class="radio-msg">
+                        <div class="radio-sender">
+                            <p class="sender-name">FL BE 18/83/8</p>
+                            <p class="sender-status status-1">1</p>
+                        </div>
+                        <div class="radio-msg-content">
+                            <a href="#" class="msg-destination">Einsatzbereit über Funk</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="radio-response">
+                    <div class="radio-msg">
+                        <div class="radio-sender">
+                            <p class="sender-name">SAMA BE 21/24/4</p>
+                            <p class="sender-status status-2">2</p>
+                        </div>
+                        <div class="radio-msg-content">
+                            <a href="#" class="msg-destination">Einsatzbereit auf Wache</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="radio-response">
+                    <div class="radio-msg">
+                        <div class="radio-sender">
+                            <p class="sender-name">SAMA BE 21/24/4</p>
+                            <p class="sender-status status-4">4</p>
+                        </div>
+                        <div class="radio-msg-content">
+                            <span>Einsatzort:</span>
+                            <a href="#" class="msg-destination">B2 MiG (#2451)</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="radio-response">
+                    <div class="radio-msg">
+                        <div class="radio-sender">
+                            <p class="sender-name">SAMA BE 21/24/4</p>
+                            <p class="sender-status status-6">6</p>
+                        </div>
+                        <div class="radio-msg-content">
+                            <a href="#" class="msg-destination">Außer Dienst</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="radio-response">
+                    <div class="radio-msg">
+                        <div class="radio-sender">
+                            <p class="sender-name">SAMA BE 21/24/4</p>
+                            <p class="sender-status status-5">5</p>
+                        </div>
+                        <div class="radio-msg-content">
+                            <a href="#" class="msg-destination">Sprechwunsch (#9237)</a>
+                        </div>
+                    </div>
+                </div>                
+            </section >
+        </article>
         `;
 
         this.dialogBone.id = dialogUUID;

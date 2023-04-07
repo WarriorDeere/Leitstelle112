@@ -7,5 +7,5 @@ toggleEmergencyDialog.addEventListener('click', () => {
 
 const toggleRadioDialog = document.querySelector('#radio');
 toggleRadioDialog.addEventListener('click', () => {
+    dialog.openRadioDialog();
 });
-dialog.openRadioDialog();
