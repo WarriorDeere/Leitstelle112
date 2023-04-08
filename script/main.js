@@ -9,3 +9,9 @@ const toggleRadioDialog = document.querySelector('#radio');
 toggleRadioDialog.addEventListener('click', () => {
     dialog.openRadioDialog();
 });
+
+const toggleBuildingDialog = document.querySelector('#building');
+toggleBuildingDialog.addEventListener('click', () => {
+    dialog.openBuildingDialog();
+});
+dialog.openBuildingDialog();

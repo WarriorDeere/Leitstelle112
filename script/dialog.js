@@ -27,7 +27,7 @@ class DIALOG {
                     </div>
                 </header>
 
-                <section class="dialog-content">
+                <section class="em-dialog-content">
                     <div class="dialog-content-item">
                         <div class="emergency-content">
                             <div class="emergency-head emergency-fire">
@@ -284,7 +284,124 @@ class DIALOG {
         this.dialogContainer.appendChild(this.dialogBone);
 
         const thisDialog = document.getElementById(dialogUUID);
-        thisDialog.classList.add('dialog-emergency');
+        thisDialog.classList.add('dialog-radio');
+
+        thisDialog.showModal();
+
+        const closeDialog = document.querySelector('#close-dialog');
+        closeDialog.addEventListener('click', () => {
+            thisDialog.close();
+        })
+    }
+
+    openBuildingDialog(){
+        const dialogUUID = crypto.randomUUID();
+
+        this.dialogBone.innerHTML = `
+        <article class="dialog-item">
+            <header class="dialog-head">
+                <div class="header-text">
+                    <p>
+                        Gebäude
+                    </p>
+                </div>
+                <div class="header-ui">
+                    <button class="close-dialog" id="close-dialog">
+                        <p>ESC</p>
+                        <span class="material-symbols-outlined">
+                            cancel
+                        </span>
+                    </button>    
+                </div>
+            </header>
+
+            <section class="building-content">
+                <div class="building-group">
+                    <header class="building-group-header">
+                        <span class="material-symbols-outlined group-icon">
+                            local_fire_department
+                        </span>
+                        <p class="group-name">
+                            Feuerwehr
+                        </p>
+                    </header>
+
+                    <div class="building-item">
+                        <header class="building-header">
+                            <div class="building-icon">
+                                <img src="https://media.istockphoto.com/id/523392641/de/foto/notfall-feuer-und-rettung-truck.webp?s=2048x2048&w=is&k=20&c=v1zlmCe6Z9wYP96CdUzjm9hjh_5-SCxKOkbTKIE1WyY=">
+                            </div>
+                            <p class="building-name">
+                                Berufsfeuerwehr Neustadt
+                            </p>
+                            <div class="building-detail">
+                                <div class="detail-item">
+                                    <span class="detail-title">Löschfahrzeug</span>
+                                    <span class="detail-value">2</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-title">Rüstwagen</span>
+                                    <span class="detail-value">1</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-title">Einsatzleitung</span>
+                                    <span class="detail-value">1</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-title">Hubrettungsfahrzeug</span>
+                                    <span class="detail-value">1</span>
+                                </div>
+                            </div>
+                        </header>
+                        
+                        <div class="building-fleet">
+                            <div class="fleet-item">
+                                <div class="vehicle-icon">
+                                    <img src="https://tse1.mm.bing.net/th?id=OIP.BkbqXNjKQ3bwAgUdySYPTQHaFj&pid=Api">
+                                </div>
+                                <div class="vehicle-name">
+                                    FL NEU 22/48/2
+                                </div>
+                                <div class="vehicle-status status-2">
+                                    2
+                                </div>
+                            </div>
+                            <div class="fleet-item">
+                                <div class="vehicle-icon">
+                                    <img src="https://tse1.explicit.bing.net/th?id=OIP.cayoz-I7Smzcm0Kvr0Sx-wHaFU&pid=Api">
+                                </div>
+                                <div class="vehicle-name">
+                                    FL NEU 22/43/1
+                                </div>
+                                <div class="vehicle-status status-4">
+                                    4
+                                </div>
+                            </div>
+                            <div class="fleet-item">
+                                <div class="vehicle-icon">
+                                    <img src="https://tse3.mm.bing.net/th?id=OIP.R_zdsl7d93Dw36EOI3flPgAAAA&pid=Api">
+                                </div>
+                                <div class="vehicle-name">
+                                    FL NEU 22/83/2
+                                </div>
+                                <div class="vehicle-status status-5">
+                                    5
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </article>
+        `;
+
+        this.dialogBone.id = dialogUUID;
+
+        this.dialogContainer.appendChild(this.dialogBone);
+
+        const thisDialog = document.getElementById(dialogUUID);
+        thisDialog.classList.add('dialog-building');
 
         thisDialog.showModal();
 
