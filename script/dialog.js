@@ -316,7 +316,7 @@ class DIALOG {
             </header>
 
             <section class="building-content">
-                <div class="building-group">
+                <div class="building-group type-fire">
                     <header class="building-group-header">
                         <span class="material-symbols-outlined group-icon">
                             local_fire_department
