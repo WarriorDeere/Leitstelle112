@@ -1,8 +1,10 @@
 class EMERGENCY {
 
     constructor() {
-        this.typeURL = 'http://127.0.0.1:5500/blueprints/types.json';
-        this.dummyURL = 'http://127.0.0.1:5500/blueprints/dummy.json';
+        //this.typeURL = 'http://127.0.0.1:5500/blueprints/types.json';
+        //this.dummyURL = 'http://127.0.0.1:5500/blueprints/dummy.json';
+        this.typeURL = 'https://warriordeere-verbose-carnival-jvj64qr5pw93qv49-5500.preview.app.github.dev/blueprints/types.json';
+        this.dummyURL = 'https://warriordeere-verbose-carnival-jvj64qr5pw93qv49-5500.preview.app.github.dev/blueprints/dummy.json';
     }
 
     async genFire() {
@@ -24,6 +26,7 @@ class EMERGENCY {
 
             return final;
         }).catch((err) => {
+            console.error(err);
             throw new Error(err);
         });
 
@@ -37,8 +40,10 @@ class EMERGENCY {
 
 
         async function genText(detailData) {
-            const introURL = 'http://127.0.0.1:5500/blueprints/text/intro.json';
-            const outroURL = 'http://127.0.0.1:5500/blueprints/text/outro.json';
+            //const introURL = 'http://127.0.0.1:5500/blueprints/text/intro.json';
+            //const outroURL = 'http://127.0.0.1:5500/blueprints/text/outro.json';
+            const introURL = 'https://warriordeere-verbose-carnival-jvj64qr5pw93qv49-5500.preview.app.github.dev/blueprints/text/intro.json';
+            const outroURL = 'https://warriordeere-verbose-carnival-jvj64qr5pw93qv49-5500.preview.app.github.dev/blueprints/text/outro.json';
 
             let intro;
 
@@ -62,9 +67,12 @@ class EMERGENCY {
 
             let textDetail;
 
-            await fetch(`http://127.0.0.1:5500/blueprints/text/${detailData}.json`).then(async (response) => {
+            //const fetchURL = `http://127.0.0.1:5500/blueprints/text/${detailData}.json`;
+            const fetchURL = `https://warriordeere-verbose-carnival-jvj64qr5pw93qv49-5500.preview.app.github.dev/blueprints/text/${detailData}.json`;
+
+            await fetch(fetchURL).then(async (response) => {
                 const data = await response.json();
-                console.debug(`http://127.0.0.1:5500/blueprints/text/${detailData}.json`);
+                console.debug(fetchURL);
                 textDetail = data[Math.floor(Math.random() * data.length)];
                 return textDetail;
             }).catch((err) => {
