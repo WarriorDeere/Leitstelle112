@@ -1,25 +1,23 @@
 class EMERGENCY {
 
     constructor() {
-        //this.typeURL = 'http://127.0.0.1:5500/blueprints/types.json';
-        //this.dummyURL = 'http://127.0.0.1:5500/blueprints/dummy.json';
-        this.typeURL = 'https://warriordeere-verbose-carnival-jvj64qr5pw93qv49-5500.preview.app.github.dev/blueprints/types.json';
-        this.dummyURL = 'https://warriordeere-verbose-carnival-jvj64qr5pw93qv49-5500.preview.app.github.dev/blueprints/dummy.json';
+        this.missionURL = 'http://127.0.0.1:5500/blueprints/missions.json';
+        this.dummyURL = 'http://127.0.0.1:5500/blueprints/dummy.json';
     }
 
-    async genFire() {
+    async genMission() {
         let final = {
             type: undefined,
             text: undefined
         };
         let finalDummy;
 
-        await fetch(this.typeURL).then(async (response) => {
+        await fetch(this.missionURL).then(async (response) => {
             const data = await response.json();
-            const typeArray = Math.floor(Math.random() * data.length);
-            final.type = data[typeArray].cago + ' - ' + data[typeArray].desc;
+            const typeArray = Math.floor(Math.random() * data.missions.length);
+            final.type = data.missions[typeArray].type.cago + ' - ' + data.missions[typeArray].type.desc;
 
-            await genText(data[typeArray].file).then((r) => {
+            await genText(data.missions[typeArray].type.file, data.missions[typeArray].caller_hint).then((r) => {
                 final.text = r;
                 return final.text;
             });
@@ -39,11 +37,9 @@ class EMERGENCY {
         });
 
 
-        async function genText(detailData) {
-            //const introURL = 'http://127.0.0.1:5500/blueprints/text/intro.json';
-            //const outroURL = 'http://127.0.0.1:5500/blueprints/text/outro.json';
-            const introURL = 'https://warriordeere-verbose-carnival-jvj64qr5pw93qv49-5500.preview.app.github.dev/blueprints/text/intro.json';
-            const outroURL = 'https://warriordeere-verbose-carnival-jvj64qr5pw93qv49-5500.preview.app.github.dev/blueprints/text/outro.json';
+        async function genText(detailData, callerHint) {
+            const introURL = 'http://127.0.0.1:5500/blueprints/text/intro.json';
+            const outroURL = 'http://127.0.0.1:5500/blueprints/text/outro.json';
 
             let intro;
 
@@ -67,13 +63,11 @@ class EMERGENCY {
 
             let textDetail;
 
-            //const fetchURL = `http://127.0.0.1:5500/blueprints/text/${detailData}.json`;
-            const fetchURL = `https://warriordeere-verbose-carnival-jvj64qr5pw93qv49-5500.preview.app.github.dev/blueprints/text/${detailData}.json`;
+            const fetchURL = `http://127.0.0.1:5500/blueprints/text/${detailData}.json`;
 
             await fetch(fetchURL).then(async (response) => {
                 const data = await response.json();
-                console.debug(fetchURL);
-                textDetail = data[Math.floor(Math.random() * data.length)];
+                textDetail = data[callerHint][Math.floor(Math.random() * data[callerHint].length)];
                 return textDetail;
             }).catch((err) => {
                 throw new Error(err);
@@ -99,8 +93,8 @@ const emergency = new EMERGENCY();
 
 onmessage = async (input) => {
     const data = input.data
-    if (data === 'fire') {
-        await emergency.genFire().then((r) => {
+    if (data === 'mission') {
+        await emergency.genMission().then((r) => {
             postMessage(r);
         })
     }

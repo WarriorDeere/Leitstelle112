@@ -16,10 +16,10 @@ toggleBuildingDialog.addEventListener('click', () => {
 });
 
 if (window.Worker) {
-    const genEmergency = new Worker('../script/gen/emergency.js');
-    genEmergency.postMessage('fire');
+    const newMission = new Worker('../script/gen/mission.js');
+    newMission.postMessage('mission');
 
-    genEmergency.onmessage = async (r) => {
+    newMission.onmessage = async (r) => {
         const rawText = r.data.emergencyText;
         function repPlaceholder(){
           const filteredText = rawText.replace('${NAME}', r.data.emergencyDummy);

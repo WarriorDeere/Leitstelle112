@@ -1,12 +1,25 @@
-[
-    "Guten Tag, ich habe gerade einen Unfall gesehen. Ein Auto ist von der Straße abgekommen und der Fahrer scheint verletzt zu sein.",
-    "Ich bin gerade an einer Baustelle vorbeigefahren. Da ist der große gelbe Kran umgestürzt. Ich glaube aber, dass da keiner in der Nähe war. Ist ja schließlich schon Feierabend.",
-    "Hier liegt ein Baum auf der Straße! Der blockiert den ganzen Verkehr.",
-    "Hallo, ich brauche dringend Hilfe. Ich bin mit meinem Auto liegen geblieben und komme nicht weiter.",
-    "Ich habe gerade gesehen, wie ein Kind in einen offenen Schacht gefallen ist. Der ist ganz schön tief, das Kind hat sich bestimmt verletzt.",
-    "Hier gab es einen schweren Unfall auf der Autobahn. Da sind mehrere Autos beteiligt. Das sieht sehr schlimm aus.",
-    "Ich habe gerade einen Mann von der Brücke geholt. Der wollte da runterspringen. Ich konnte ihn gerade noch zurückhalten, aber ich denke, er braucht professionelle Hilfe.",
-    "Ich bin gerade Zeuge eines Überfalls geworden. Die Täter sind geflüchtet, aber das Opfer scheint schwer verletzt zu sein.",
-    "Da ist gerade ein großes Stück von der Fassade eingestürzt. Da könnten noch Menschen drin sein, die dringend Hilfe brauchen.",
-    "Hallo, ich brauche dringend Hilfe. Die Treppe zum Dachboden ist eingebrochen und meine Mutter ist noch da oben. Die kommt nicht mehr von allein runter!"
-]
+{
+    "accident": [
+        "Guten Tag, ich habe gerade einen Unfall gesehen. Ein Auto ist von der Straße abgekommen und der Fahrer scheint verletzt zu sein.",
+        "Hier gab es einen schweren Unfall auf der Autobahn. Da sind mehrere Autos beteiligt. Das sieht sehr schlimm aus."
+    ],
+    "assist": [
+        "Ich bin gerade an einer Baustelle vorbeigefahren. Da ist der große gelbe Kran umgestürzt. Ich glaube aber, dass da keiner in der Nähe war. Ist ja schließlich schon Feierabend.",
+        "Hier liegt ein Baum auf der Straße! Der blockiert den ganzen Verkehr.",
+        "Hallo, ich brauche dringend Hilfe. Ich bin mit meinem Auto liegen geblieben und komme nicht weiter.",
+        "Da ist gerade ein großes Stück von der Fassade eingestürzt. Da könnten noch Menschen drin sein, die dringend Hilfe brauchen."
+    ],
+    "human": [
+        "Ich habe gerade einen Mann von der Brücke geholt. Der wollte da runterspringen. Ich konnte ihn gerade noch zurückhalten, aber ich denke, er braucht professionelle Hilfe.",
+        "Ich bin gerade Zeuge eines Überfalls geworden. Die Täter sind geflüchtet, aber das Opfer scheint schwer verletzt zu sein.",
+        "Ich habe gerade gesehen, wie ein Kind in einen offenen Schacht gefallen ist. Der ist ganz schön tief, das Kind hat sich bestimmt verletzt.",
+        "Hallo, ich brauche dringend Hilfe. Die Treppe zum Dachboden ist eingebrochen und meine Mutter ist noch da oben. Die kommt nicht mehr von allein runter!"
+    ],
+    "tree_vehicle": [
+        "Ich bin gerade auf der ${LOCATION_STREET} und habe gesehen, wie ein großer Ast auf ein parkendes Auto gestürzt ist.",
+        "Eine dringende Meldung. Vor mir ist ein Baum gerade auf einen LKW gekippt und hat ihn zum Stillstand gebracht. Das war ganz fürchterlich laut",
+        "Ein Baum an der ${LOCATION_STREET} hat soeben einen PKW getroffen, nachdem er einfach umgekippt ist.",
+        "Ich rufe an, weil ein Baum auf ein Auto gestürzt ist. Das ist hier an der ${LOCATION_STREET}.",
+        "Hier ist ein großer Baum auf die ${LOCATION_STREET} gefallen. Wie Sie sicherlich wissen ist das eine viel befahrene Straße und blockiert nun den Verkehr."
+    ]
+}
