@@ -336,19 +336,19 @@ class DIALOG {
                             </p>
                             <div class="building-detail">
                                 <div class="detail-item">
-                                    <span class="detail-title">Löschfahrzeug</span>
+                                    <span class="detail-title">LF</span>
                                     <span class="detail-value">2</span>
                                 </div>
                                 <div class="detail-item">
-                                    <span class="detail-title">Rüstwagen</span>
+                                    <span class="detail-title">RW</span>
                                     <span class="detail-value">1</span>
                                 </div>
                                 <div class="detail-item">
-                                    <span class="detail-title">Einsatzleitung</span>
+                                    <span class="detail-title">ELW</span>
                                     <span class="detail-value">1</span>
                                 </div>
                                 <div class="detail-item">
-                                    <span class="detail-title">Hubrettungsfahrzeug</span>
+                                    <span class="detail-title">DLK</span>
                                     <span class="detail-value">1</span>
                                 </div>
                             </div>
@@ -362,8 +362,14 @@ class DIALOG {
                                 <div class="vehicle-name">
                                     FL NEU 22/48/2
                                 </div>
+                                <div class="vehicle-type">
+                                    Löschfahrzeug
+                                </div>
                                 <div class="vehicle-status status-2">
                                     2
+                                </div>
+                                <div class="vehicle-mission">
+                                    Baum auf PKW <a href="#">(#2372)</a>
                                 </div>
                             </div>
                             <div class="fleet-item">
@@ -371,10 +377,16 @@ class DIALOG {
                                     <img src="https://tse1.explicit.bing.net/th?id=OIP.cayoz-I7Smzcm0Kvr0Sx-wHaFU&pid=Api">
                                 </div>
                                 <div class="vehicle-name">
-                                    FL NEU 22/43/1
+                                    FL NEU 22/11/1
+                                </div>
+                                <div class="vehicle-type">
+                                    Einsatzleitung
                                 </div>
                                 <div class="vehicle-status status-4">
                                     4
+                                </div>
+                                <div class="vehicle-mission">
+                                    Baum auf PKW <a href="#">(#2372)</a>
                                 </div>
                             </div>
                             <div class="fleet-item">
@@ -382,10 +394,16 @@ class DIALOG {
                                     <img src="https://tse3.mm.bing.net/th?id=OIP.R_zdsl7d93Dw36EOI3flPgAAAA&pid=Api">
                                 </div>
                                 <div class="vehicle-name">
-                                    FL NEU 22/83/2
+                                    FL NEU 22/48/1
+                                </div>
+                                <div class="vehicle-type">
+                                    Löschfahrzeug
                                 </div>
                                 <div class="vehicle-status status-5">
                                     5
+                                </div>
+                                <div class="vehicle-mission">
+                                    Baum auf PKW <a href="#">(#2372)</a>
                                 </div>
                             </div>
                         </div>

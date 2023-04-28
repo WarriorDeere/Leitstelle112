@@ -23,6 +23,7 @@
     --gray-hover: rgb(145, 145, 145);
     
     --fleet-card: rgb(216, 216, 216);
+    --detail-bg: rgb(170, 0, 0);
 
     --color-assistance: rgb(255, 145, 0);
     --color-fire: rgb(160, 0, 0);
@@ -147,6 +148,7 @@ body {
 .dialog-container dialog[open] {
     z-index: 100;
     user-select: none;
+    box-shadow: 0 0 2rem 0 rgb(0, 0, 0, .4);
 }
 
 .dialog-container dialog::backdrop {
@@ -177,6 +179,7 @@ body {
     justify-content: space-between;
     position: sticky;
     top: 0;
+    box-shadow: 0 0 1rem 0 rgb(0, 0, 0, .4);
 }
 
 .em-dialog-content {
@@ -515,26 +518,8 @@ body {
     padding: 1rem;
     border-radius: 1rem;
     column-gap: .5rem;
-}
-
-.type-fire .building-group-header {
+    background-color: var(--red);
     color: var(--white);
-    background-color: var(--color-fire);
-}
-
-.type-police .building-group-header {
-    color: var(--white);
-    background-color: var(--color-police);
-}
-
-.type-ambulance .building-group-header {
-    color: var(--white);
-    background-color: var(--color-ambulance);
-}
-
-.type-misc .building-group-header {
-    color: var(--white);
-    background-color: var(--color-misc);
 }
 
 .group-name {
@@ -572,6 +557,7 @@ body {
     display: flex;
     flex-direction: column;
     margin-bottom: 3rem;
+    background-color: var(--fleet-card);
 }
 
 .building-name {
@@ -592,7 +578,7 @@ body {
     grid-column-end: 3;
     font-weight: 400;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(5rem, 20rem));
+    grid-template-columns: repeat(auto-fill, minmax(5rem, auto));
     grid-template-rows: repeat(auto-fill, minmax(1rem, 2rem));
     gap: .5rem;
 }
@@ -603,20 +589,20 @@ body {
     align-items: center;
     justify-content: space-between;
     height: fit-content;
-    border: .15rem dashed transparent;
     padding: .2rem .6rem;
     font-size: 1.2rem;
     cursor: pointer;
-    transition: border .1s ease-in-out;
-}
-
-.detail-item:hover {
-    border: .15rem dashed var(--black);
+    border-radius: .5rem;
+    color: var(--white);
+    background-color: var(--detail-bg);
 }
 
 .detail-title {
     font-weight: 600;
-    word-wrap: break-word;
+}
+
+.detail-value {
+    font-weight: 200;
 }
 
 .building-header {
@@ -627,14 +613,14 @@ body {
     row-gap: 1rem;
     padding: 2rem;
     border-radius: 2rem;
-    background-color: var(--fleet-card);
 }
 
 .building-fleet {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(15rem, 18rem));
-    grid-template-rows: repeat(auto-fill, minmax(5rem, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(48%, auto));
+    grid-template-rows: repeat(auto-fit, 5rem);
+    gap: 2rem;
+    padding: 2rem;
 }
 
 .vehicle-icon img {
@@ -647,20 +633,21 @@ body {
 
 .fleet-item {
     display: grid;
-    grid-template-columns: 5rem auto;
-    grid-template-rows: 1.5rem 3.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(5rem, auto));
+    grid-template-rows: 2.5rem 2.5rem;
+    justify-content: flex-start;
     column-gap: 1rem;
-    row-gap: .5rem;
-    background-color: var(--fleet-card);
-    padding: 1rem 1.5rem;
     border-radius: 2rem;
-    height: fit-content;
+}
+
+.fleet-item div:not(.vehicle-icon){
+    align-self: center;
 }
 
 .vehicle-icon {
     grid-row-start: 1;
     grid-column-start: 1;
-    grid-row-end: 2;
+    grid-row-end: 3;
     grid-column-end: 2;
 }
 
@@ -672,11 +659,25 @@ body {
 }
 
 .vehicle-status {
+    grid-row-start: 1;
+    grid-column-start: 3;
+    grid-row-end: 3;
+    grid-column-end: 4;
+    align-self: center;
+    justify-self: center;
+    border-radius: 1rem;
+}
+
+.vehicle-type{
     grid-row-start: 2;
     grid-column-start: 2;
     grid-row-end: 3;
     grid-column-end: 3;
-    align-self: flex-start;
-    justify-self: flex-start;
-    border-radius: 1rem;
+}
+
+.vehicle-mission{
+    grid-row-start: 1;
+    grid-column-start: 4;
+    grid-row-end: 3;
+    grid-column-end: 5;
 }
