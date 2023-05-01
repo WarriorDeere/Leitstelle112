@@ -1,3 +1,5 @@
+import { database } from "./database.js";
+
 const newMission = new Worker('../script/gen/mission.js');
 
 class DIALOG {
@@ -11,8 +13,15 @@ class DIALOG {
         };
     }
 
-    async openMissionDialog(type, number) {
+    async openMissionDialog(type) {
         try {
+            database.operateWithDB(undefined, 'POST').then((r) => {
+                console.log(r);
+            }).catch((err) => {
+                throw new Error(err);
+            });
+
+            // create base ('bone')
             const dialogUUID = crypto.randomUUID();
 
             this.dialogBone.id = dialogUUID;
@@ -50,86 +59,91 @@ class DIALOG {
             })
 
             const itemContainer = document.querySelector(`#dialog-item-${dialogUUID}`);
+            const itemBone = document.createElement('section');
 
-            for (let i = 0; i < number; i++) {
+            //set content
 
-                const missionUUID = crypto.randomUUID();
-                const itemBone = document.createElement('section');
+            const missionUUID = crypto.randomUUID();
 
-                switch (type) {
-                    case 'fd':
-                        newMission.postMessage('fire');
-                        break;
-
-                    default:
-                        this.closeStatus = {
-                            code: 301,
-                            text: 'Request failed'
-                        };
-                        console.error(this.closeStatus);
-                        break;
-                }
-
-                newMission.onmessage = async (r) => {
-
-                    const response = r.data;
-
-                    if (response.status.code === 200) {
-                        const rawText = response.data.emergencyText;
-
-                        function repPlaceholder() {
-                            const filteredText = rawText.replace('${NAME}', response.data.emergencyDummy);
-                            return filteredText;
-                        };
-
-                        const missionsDesc = document.querySelector(`#mission-text-${missionUUID}`);
-                        missionsDesc.innerHTML = '';
-
-                        const missionTitle = document.querySelector(`#mission-title-${missionUUID}`);
-                        missionTitle.innerHTML = response.data.emergencyHeader.title;
-
-                        const missionType = document.querySelector(`#mission-type-${missionUUID}`);
-                        missionType.innerHTML = response.data.emergencyHeader.type;
-
-                        const missionLocation = document.querySelector(`#mission-location-${missionUUID}`);
-                        missionLocation.innerHTML = response.data.emergencyHeader.location;
-
-                        const text = await repPlaceholder();
-                        const textBone = document.createTextNode(text);
-                        missionsDesc.appendChild(textBone);
+            switch (type) {
+                case 'fd':
+                    const post = {
+                        missionType: 'fire',
+                        missionUUID: missionUUID
                     }
-                    else if (response.status.code != 200) {
-                        throw new Error(`${response.status.code} - ${response.status.text}`);
-                    }
-                }
+                    newMission.postMessage(post);
+                    break;
 
-                itemBone.classList.add('em-dialog-content');
-                itemBone.innerHTML = `
-                <div class="dialog-content-item">
-                    <div class="emergency-content">
-                        <div class="emergency-head emergency-fire">
-                            <div class="emergency-icon">
-                                <img src="https://cdn-icons-png.flaticon.com/512/1453/1453025.png">
-                            </div>
-                            <div class="emergency-title" id="mission-title-${missionUUID}">Stichwort lädt...</div>
-                            <div class="emergency-type" id="mission-type-${missionUUID}">Kategorie lädt...</div>
-                            <div class="emergency-location" id="mission-location-${missionUUID}">Adresse lädt...</div>
+                default:
+                    this.closeStatus = {
+                        code: 301,
+                        text: 'Request failed'
+                    };
+                    console.error(this.closeStatus);
+                    break;
+            }
+
+            newMission.onmessage = async (r) => {
+
+                const response = r.data;
+
+                if (response.status.code === 200) {
+                    const rawText = response.data.emergencyText;
+
+                    function repPlaceholder() {
+                        const filteredText = rawText.replace('${NAME}', response.data.emergencyDummy);
+                        return filteredText;
+                    };
+
+                    const missionsDesc = document.querySelector(`#mission-text-${missionUUID}`);
+                    missionsDesc.innerHTML = '';
+
+                    const missionTitle = document.querySelector(`#mission-title-${missionUUID}`);
+                    missionTitle.innerHTML = response.data.emergencyHeader.title;
+
+                    const missionType = document.querySelector(`#mission-type-${missionUUID}`);
+                    missionType.innerHTML = response.data.emergencyHeader.type;
+
+                    const missionLocation = document.querySelector(`#mission-location-${missionUUID}`);
+                    missionLocation.innerHTML = response.data.emergencyHeader.location;
+
+                    const text = await repPlaceholder();
+                    const textBone = document.createTextNode(text);
+                    missionsDesc.appendChild(textBone);
+
+                    database.operateWithDB(response.data, 'POST');
+                }
+                else if (response.status.code != 200) {
+                    throw new Error(`${response.status.code} - ${response.status.text}`);
+                }
+            }
+
+            itemBone.classList.add('em-dialog-content');
+            itemBone.innerHTML = `
+            <div class="dialog-content-item">
+                <div class="emergency-content">
+                    <div class="emergency-head emergency-fire">
+                        <div class="emergency-icon">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1453/1453025.png">
                         </div>
-                        <div class="emergency-information">
-                            <div class="emergency-desc">
-                                <p id="mission-text-${missionUUID}">Text lädt...</p>
-                            </div>
-                        </div>
+                        <div class="emergency-title" id="mission-title-${missionUUID}">Stichwort lädt...</div>
+                        <div class="emergency-type" id="mission-type-${missionUUID}">Kategorie lädt...</div>
+                        <div class="emergency-location" id="mission-location-${missionUUID}">Adresse lädt...</div>
                     </div>
-                    <div class="emergency-interface">
-                        <button class="emergency-cancel">Abbrechen</button>
-                        <button class="emergency-respond">Annehmen</button>
+                    <div class="emergency-information">
+                        <div class="emergency-desc">
+                            <p id="mission-text-${missionUUID}">Text lädt...</p>
+                        </div>
                     </div>
                 </div>
-                `
-                
-                itemContainer.appendChild(itemBone);
-            }
+                <div class="emergency-interface">
+                    <button class="emergency-cancel">Abbrechen</button>
+                    <button class="emergency-respond">Annehmen</button>
+                </div>
+            </div>
+            `
+
+            itemContainer.appendChild(itemBone);
 
             this.closeStatus = {
                 code: 200,

@@ -30,7 +30,10 @@ If no hints are given, a retry will usually help. If this fails, try to restart 
 | Response code | Meaning           | instructions           |
 | ------------- |-------------------| -------------|
 |    300        | No feedback/status unknown       |       -       |
-|    301        | Something went wrong while generating a mission     |       -       |
+|    301        | Operation failed   |       -       |
+|    302        | Invalid command     |       -       |
+|    303        | Invalid input     |       -       |
+|    304        | Invalid input in combination with command    |       -       |
 
 # Miscallneous
 

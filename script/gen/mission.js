@@ -9,7 +9,7 @@ class EMERGENCY {
         };
     }
 
-    async genMission(type) {
+    async genMission(type, identifier) {
 
         let final = {
             title: undefined,
@@ -102,8 +102,10 @@ class EMERGENCY {
                 location: final.location
             },
             emergencyText: final.text,
-            emergencyDummy: finalDummy
+            emergencyDummy: finalDummy,
+            mission: identifier
         };
+
         return finalEmergency;
     }
 }
@@ -111,7 +113,7 @@ class EMERGENCY {
 const emergency = new EMERGENCY();
 
 onmessage = async (input) => {
-    await emergency.genMission(input.data).then((r) => {
+    await emergency.genMission(input.data.missionType, input.data.missionUUID).then((r) => {
         const response = {
             status: {
                 code: 200,
