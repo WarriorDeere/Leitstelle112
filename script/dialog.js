@@ -1,159 +1,150 @@
+const newMission = new Worker('../script/gen/mission.js');
+
 class DIALOG {
 
     constructor() {
         this.dialogBone = document.createElement('dialog');
         this.dialogContainer = document.querySelector('#dialog-container');
+        this.closeStatus = {
+            code: 300,
+            text: 'Closed without feedback'
+        };
     }
 
-    openEmergnecyDialog() {
-        const dialogUUID = crypto.randomUUID();
+    async openMissionDialog(type, number) {
+        try {
+            const dialogUUID = crypto.randomUUID();
 
-        this.dialogBone.innerHTML =
-            `
-            <article class="dialog-item">
-                <header class="dialog-head">
-                    <div class="header-text">
-                        <p>
-                            Eingegangene Einsätze
-                        </p>
-                    </div>
-                    <div class="header-ui">
-                        <button class="close-dialog" id="close-dialog">
-                            <p>ESC</p>
-                            <span class="material-symbols-outlined">
-                                cancel
-                            </span>
-                        </button>    
-                    </div>
-                </header>
+            this.dialogBone.id = dialogUUID;
+            this.dialogBone.innerHTML =
+                `
+                <article class="dialog-item" id="dialog-item-${dialogUUID}">
+                    <header class="dialog-head">
+                        <div class="header-text">
+                            <p>
+                                Eingegangene Einsätze
+                            </p>
+                        </div>
+                        <div class="header-ui">
+                            <button class="close-dialog" id="close-dialog">
+                                <p>ESC</p>
+                                <span class="material-symbols-outlined">
+                                    cancel
+                                </span>
+                            </button>    
+                        </div>
+                    </header>
+                </article>
+            `;
 
-                <section class="em-dialog-content">
-                    <div class="dialog-content-item">
-                        <div class="emergency-content">
-                            <div class="emergency-head emergency-fire">
-                                <div class="emergency-icon">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/1453/1453025.png">
-                                </div>
-                                <div class="emergency-title">Mittelbrand, Menschenleben in Gefahr</div>
-                                <div class="emergency-type">B2 - MiG</div>
-                                <div class="emergency-location">Sonnenstraße 24, 02193 Berlin</div>
-                            </div>
-                            <div class="emergency-information">
-                                <div class="emergency-desc">
-                                    <p>Hallo, hier ist Jannie Müller. Ich bin hier in der Sonnenstraße 24 und da qualmt es aus dem Fenster! bitte kommen Sie schnell, da sind noch Personen im Haus!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="emergency-interface">
-                            <button class="emergency-cancel">Abbrechen</button>
-                            <button class="emergency-respond">Annehmen</button>
-                        </div>
-                    </div>
+            this.dialogContainer.appendChild(this.dialogBone);
 
-                    <div class="dialog-content-item">
-                        <div class="emergency-content">
-                            <div class="emergency-head emergency-ambulance">
-                                <div class="emergency-icon">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/2955/2955619.png">
-                                </div>
-                                <div class="emergency-title">Kreislaufzusammenbruch</div>
-                                <div class="emergency-type">RD2 - Herz/Kreislauf</div>
-                                <div class="emergency-location">Straße des 17. Juni, 24271 Berlin</div>
-                            </div>
-                            <div class="emergency-information">
-                                <div class="emergency-desc">
-                                    <p>Schnell, kommen Sie!! Hier bei Brandburg Tor. Mann umgekippt, nix bewegen mehr!</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="emergency-interface">
-                            <button class="emergency-cancel">Abbrechen</button>
-                            <button class="emergency-respond">Annehmen</button>
-                        </div>
-                    </div>
+            const thisDialog = document.getElementById(dialogUUID);
+            thisDialog.classList.add('dialog-emergency');
 
-                    <div class="dialog-content-item">
-                        <div class="emergency-content">
-                            <div class="emergency-head emergency-assistance">
-                                <div class="emergency-icon">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/2125/2125190.png">
-                                </div>
-                                <div class="emergency-title">VU Person unter Straßenbahn</div>
-                                <div class="emergency-type">TH/VU P - Straßenbahn</div>
-                                <div class="emergency-location">Alexanderstraße, 19382 Berlin</div>
-                            </div>
-                            <div class="emergency-information">
-                                <div class="emergency-desc">
-                                    <p>Hier an der Haltestelle Berlin Alexanderplatz ist wer ohne zu gucken über die Schienen gegangen. Der liegt da jetzt unter der Straßenbahn. Beeilen sich sich, Ja? Ich muss nämlich weiter, habe noch einen wichtigen Termin! Schönen Tag noch.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="emergency-interface">
-                            <button class="emergency-cancel">Abbrechen</button>
-                            <button class="emergency-respond">Annehmen</button>
-                        </div>
-                    </div>
+            thisDialog.showModal();
 
-                    <div class="dialog-content-item">
-                        <div class="emergency-content">
-                            <div class="emergency-head emergency-police">
-                                <div class="emergency-icon">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/2204/2204022.png">
-                                </div>
-                                <div class="emergency-title">Ladenraub</div>
-                                <div class="emergency-type">POL - Raub</div>
-                                <div class="emergency-location">Juwelierstraße 13a, 83714 Potsdam</div>
+            const closeDialog = document.querySelector('#close-dialog');
+            closeDialog.addEventListener('click', () => {
+                thisDialog.close();
+            })
+
+            const itemContainer = document.querySelector(`#dialog-item-${dialogUUID}`);
+
+            for (let i = 0; i < number; i++) {
+
+                const missionUUID = crypto.randomUUID();
+                const itemBone = document.createElement('section');
+
+                switch (type) {
+                    case 'fd':
+                        newMission.postMessage('fire');
+                        break;
+
+                    default:
+                        this.closeStatus = {
+                            code: 301,
+                            text: 'Request failed'
+                        };
+                        console.error(this.closeStatus);
+                        break;
+                }
+
+                newMission.onmessage = async (r) => {
+
+                    const response = r.data;
+
+                    if (response.status.code === 200) {
+                        const rawText = response.data.emergencyText;
+
+                        function repPlaceholder() {
+                            const filteredText = rawText.replace('${NAME}', response.data.emergencyDummy);
+                            return filteredText;
+                        };
+
+                        const missionsDesc = document.querySelector(`#mission-text-${missionUUID}`);
+                        missionsDesc.innerHTML = '';
+
+                        const missionTitle = document.querySelector(`#mission-title-${missionUUID}`);
+                        missionTitle.innerHTML = response.data.emergencyHeader.title;
+
+                        const missionType = document.querySelector(`#mission-type-${missionUUID}`);
+                        missionType.innerHTML = response.data.emergencyHeader.type;
+
+                        const missionLocation = document.querySelector(`#mission-location-${missionUUID}`);
+                        missionLocation.innerHTML = response.data.emergencyHeader.location;
+
+                        const text = await repPlaceholder();
+                        const textBone = document.createTextNode(text);
+                        missionsDesc.appendChild(textBone);
+                    }
+                    else if (response.status.code != 200) {
+                        throw new Error(`${response.status.code} - ${response.status.text}`);
+                    }
+                }
+
+                itemBone.classList.add('em-dialog-content');
+                itemBone.innerHTML = `
+                <div class="dialog-content-item">
+                    <div class="emergency-content">
+                        <div class="emergency-head emergency-fire">
+                            <div class="emergency-icon">
+                                <img src="https://cdn-icons-png.flaticon.com/512/1453/1453025.png">
                             </div>
-                            <div class="emergency-information">
-                                <div class="emergency-desc">
-                                    <p>Peter Groszek hier, auf der Juwelierstraße 13 hat grade jemand den Schmuckladen leer geräumt. Da ist alles zerdeppert, die ganzen Scheiben sind alle kaputt!</p>
-                                </div>
-                            </div>
+                            <div class="emergency-title" id="mission-title-${missionUUID}">Stichwort lädt...</div>
+                            <div class="emergency-type" id="mission-type-${missionUUID}">Kategorie lädt...</div>
+                            <div class="emergency-location" id="mission-location-${missionUUID}">Adresse lädt...</div>
                         </div>
-                        <div class="emergency-interface">
-                            <button class="emergency-cancel">Abbrechen</button>
-                            <button class="emergency-respond">Annehmen</button>
-                        </div>
-                    </div>
-                    
-                    <div class="dialog-content-item">
-                        <div class="emergency-content">
-                            <div class="emergency-head emergency-misc">
-                                <div class="emergency-icon">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/6835/6835898.png">
-                                </div>
-                                <div class="emergency-title">Tragehilfe, Rettungsdienst</div>
-                                <div class="emergency-type">SPEZI Tragehilfe</div>
-                                <div class="emergency-location">Magdeburger Straße 23b, 12661 Berlin</div>
+                        <div class="emergency-information">
+                            <div class="emergency-desc">
+                                <p id="mission-text-${missionUUID}">Text lädt...</p>
                             </div>
-                            <div class="emergency-information">
-                                <div class="emergency-desc">
-                                    <p>RK BE 43/23/2 für Leitstelle. Benötigen einmal die FW an der Einsatzstelle, Tragehilfe.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="emergency-interface">
-                            <button class="emergency-cancel">Abbrechen</button>
-                            <button class="emergency-respond">Annehmen</button>
                         </div>
                     </div>
-                </section>
-            </article>
-        `;
+                    <div class="emergency-interface">
+                        <button class="emergency-cancel">Abbrechen</button>
+                        <button class="emergency-respond">Annehmen</button>
+                    </div>
+                </div>
+                `
+                
+                itemContainer.appendChild(itemBone);
+            }
 
-        this.dialogBone.id = dialogUUID;
+            this.closeStatus = {
+                code: 200,
+                text: 'Request successfull'
+            };
 
-        this.dialogContainer.appendChild(this.dialogBone);
+        } catch (err) {
+            this.closeStatus = {
+                code: 301,
+                text: 'Request failed'
+            };
+            throw new Error(err);
+        }
 
-        const thisDialog = document.getElementById(dialogUUID);
-        thisDialog.classList.add('dialog-emergency');
-
-        thisDialog.showModal();
-
-        const closeDialog = document.querySelector('#close-dialog');
-        closeDialog.addEventListener('click', () => {
-            thisDialog.close();
-        })
+        return this.closeStatus;
     }
 
     openRadioDialog() {
@@ -294,7 +285,7 @@ class DIALOG {
         })
     }
 
-    openBuildingDialog(){
+    openBuildingDialog() {
         const dialogUUID = crypto.randomUUID();
 
         this.dialogBone.innerHTML = `

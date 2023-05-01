@@ -236,30 +236,11 @@ body {
 .emergency-head {
     display: grid;
     grid-template-rows: auto 1fr 1fr;
-    grid-template-columns: auto 1fr 1fr 1fr 1fr;
+    grid-template-columns: auto 1fr;
     padding: 1rem;
     border-radius: 1rem;
     color: var(--white);
-}
-
-.emergency-fire {
-    background-color: var(--color-fire);
-}
-
-.emergency-assistance {
-    background-color: var(--color-assistance);
-}
-
-.emergency-ambulance {
-    background-color: var(--color-ambulance);
-}
-
-.emergency-police {
-    background-color: var(--color-police);
-}
-
-.emergency-misc {
-    background-color: var(--color-misc);
+    background: var(--red);
 }
 
 .emergency-icon {
@@ -282,6 +263,7 @@ body {
     grid-column-start: 2;
     grid-row-end: 2;
     grid-column-end: 6;
+    font-weight: 600;
 }
 
 .emergency-type {
@@ -290,15 +272,16 @@ body {
 
     grid-row-end: 3;
     grid-column-end: 6;
+    font-weight: 400;
 }
 
 .emergency-location {
     grid-row-start: 3;
-    grid-column-start: 1;
+    grid-column-start: 2;
 
     grid-row-end: 4;
     grid-column-end: 6;
-    padding: 0 .5rem;
+    font-weight: 400;
 }
 
 .emergency-information {
