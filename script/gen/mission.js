@@ -91,7 +91,11 @@ class EMERGENCY {
                 break;
 
             default:
-                console.error('Mission generation failed!');
+                this.closeStatus = {
+                    code: 301,
+                    text: 'Request failed'
+                };
+                console.error(this.closeStatus);
                 break;
         }
 

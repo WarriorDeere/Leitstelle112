@@ -15,11 +15,19 @@ class DIALOG {
 
     async openMissionDialog(type) {
         try {
-            database.operateWithDB(undefined, 'POST').then((r) => {
-                console.log(r);
-            }).catch((err) => {
-                throw new Error(err);
-            });
+
+            database.operateWithDB(undefined, 'GET').
+                then((r) => {
+                    r.data.forEach(async (mission) => {
+                        await this.setContent(mission, dialogUUID).then((setContentStatus) => {
+                            return setContentStatus;
+                        }).catch((err) => {
+                            throw new Error(err);
+                        });
+                    })
+                }).catch((err) => {
+                    throw new Error(`${err.code} - ${err.text}`);
+                });
 
             // create base ('bone')
             const dialogUUID = crypto.randomUUID();
@@ -77,7 +85,7 @@ class DIALOG {
                 default:
                     this.closeStatus = {
                         code: 301,
-                        text: 'Request failed'
+                        text: 'Operation failed'
                     };
                     console.error(this.closeStatus);
                     break;
@@ -119,8 +127,9 @@ class DIALOG {
             }
 
             itemBone.classList.add('em-dialog-content');
+            itemBone.id = 'dialog-content-container';
             itemBone.innerHTML = `
-            <div class="dialog-content-item">
+            <div class="dialog-content-item" id="${missionUUID}">
                 <div class="emergency-content">
                     <div class="emergency-head emergency-fire">
                         <div class="emergency-icon">
@@ -159,6 +168,60 @@ class DIALOG {
         }
 
         return this.closeStatus;
+    }
+
+    async setContent(content, identifer) {
+        const container = document.querySelector('#dialog-content-container');
+        const item = document.createElement('div');
+
+        item.classList.add('dialog-content-item');
+        item.id = identifer;
+        item.innerHTML = `
+            <div class="emergency-content">
+                <div class="emergency-head emergency-fire">
+                    <div class="emergency-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1453/1453025.png">
+                    </div>
+                    <div class="emergency-title" id="mission-title-${identifer}">Stichwort lädt...</div>
+                    <div class="emergency-type" id="mission-type-${identifer}">Kategorie lädt...</div>
+                    <div class="emergency-location" id="mission-location-${identifer}">Adresse lädt...</div>
+                </div>
+                <div class="emergency-information">
+                    <div class="emergency-desc">
+                        <p id="mission-text-${identifer}">Text lädt...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="emergency-interface">
+                <button class="emergency-cancel">Abbrechen</button>
+                <button class="emergency-respond">Annehmen</button>
+            </div>`;
+
+        container.appendChild(item);
+
+        const rawText = content.emergencyText;
+
+        function repPlaceholder() {
+            const filteredText = rawText.replace('${NAME}', content.emergencyDummy);
+            return filteredText;
+        };
+
+        const missionDesc = document.querySelector(`#mission-text-${identifer}`);
+        missionDesc.innerHTML = '';
+
+        const missionTitle = document.querySelector(`#mission-title-${identifer}`);
+        missionTitle.innerHTML = content.emergencyHeader.title;
+
+        const missionType = document.querySelector(`#mission-type-${identifer}`);
+        missionType.innerHTML = content.emergencyHeader.type;
+
+        const missionLocation = document.querySelector(`#mission-location-${identifer}`);
+        missionLocation.innerHTML = content.emergencyHeader.location;
+
+        const text = await repPlaceholder();
+        const textBone = document.createTextNode(text);
+        missionDesc.appendChild(textBone);
+        return;
     }
 
     openRadioDialog() {
