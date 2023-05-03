@@ -19,7 +19,7 @@ class DIALOG {
             database.operateWithDB(undefined, 'GET').
                 then((r) => {
                     r.data.forEach(async (mission) => {
-                        await this.setContent(mission, dialogUUID).then((setContentStatus) => {
+                        await this.setContent(mission, mission.mission).then((setContentStatus) => {
                             return setContentStatus;
                         }).catch((err) => {
                             throw new Error(err);
