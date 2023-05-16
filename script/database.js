@@ -13,7 +13,7 @@ class DATABASE {
                 throw new Error(`${this.closeStatus.code} - ${this.closeStatus.text}`);
             }
 
-            request.onerror = ((event) => {
+            request.onerror = (() => {
                 this.closeStatus = {
                     code: 301,
                     text: 'Operation failed'

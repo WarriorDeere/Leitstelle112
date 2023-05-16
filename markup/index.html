@@ -8,13 +8,18 @@
     <title>Leitstelle112</title>
 
     <link rel="stylesheet" href="/style/main.css">
+    <link rel="stylesheet" href="/style/crew.css">
     <script defer type="module" src="/script/main.js"></script>
-    <script defer type="module" src="/script/dialog.js"></script>
+    <script defer type="module" src="/script/gen/location.js"></script>
+    <script defer type="module" src="/script/ui/dialog.js"></script>
     <script defer type="module" src="/script/database.js"></script>
+    <script defer type="module" src="/script/init/map.js"></script>
 
+    <script src='https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.23.0/maps/maps-web.min.js'></script>
+    <script src='https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.23.0/services/services-web.min.js'></script>
 
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel='stylesheet' href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel='stylesheet' href='https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.23.0/maps/maps.css'>
 </head>
 
 <body>
@@ -72,8 +77,7 @@
         </div>
     </nav>
     <section class="dialog-container" id="dialog-container"></section>
-    <section class="map-container" id="map-container">
-        <!-- <iframe src="/markup/map/tomtom.html" frameborder="0"></iframe> -->
+    <section class="map-container" id="map">
     </section>
 </body>
 

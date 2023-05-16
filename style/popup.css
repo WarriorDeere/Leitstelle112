@@ -1,0 +1,18 @@
+.popup{
+    position: absolute;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: fit-content;
+    max-height: 5%;
+    z-index: 100;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, .5);
+    font-family: 'Roboto', sans-serif;
+    padding: .5rem;
+}
+
+.info{
+    background-color: rgb(195, 255, 140);
+    color: black;
+}
