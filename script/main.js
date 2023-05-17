@@ -1,7 +1,6 @@
-import { genLocation } from "./gen/location.js";
 import { dialog } from "./ui/dialog.js";
 
-export const data =
+const data =
     await fetch('http://127.0.0.1:5500/config/config.json')
         .then((response) => {
             return response.json();
@@ -34,6 +33,6 @@ toggleBuildingDialog.addEventListener('click', () => {
 
 const toggleAddNewDialog = document.querySelector('#new');
 toggleAddNewDialog.addEventListener('click', () => {
-    // dialog.openAddDialog();
-    genLocation.withinBorder('de-DE', data.APIKey);
+    dialog.openAddDialog();
 });
+dialog.openAddDialog();

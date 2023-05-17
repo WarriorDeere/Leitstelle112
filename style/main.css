@@ -22,7 +22,7 @@
     --gray: rgb(130, 130, 130);
     --gray-hover: rgb(145, 145, 145);
 
-    --fleet-card: rgb(216, 216, 216);
+    --card: rgb(216, 216, 216);
     --detail-bg: rgb(170, 0, 0);
 
     --color-assistance: rgb(255, 145, 0);
@@ -145,6 +145,11 @@ body {
     justify-content: center;
 }
 
+.dialog-item {
+    height: 100%;
+    width: 100%;
+}
+
 .dialog-container dialog[open] {
     z-index: 100;
     user-select: none;
@@ -159,6 +164,7 @@ body {
 .dialog-building,
 .dialog-radio,
 .dialog-new,
+.dialog-admin,
 .dialog-emergency {
     height: 90%;
     width: 90%;
@@ -237,7 +243,7 @@ body {
 .emergency-head {
     display: grid;
     grid-template-rows: auto 1fr 1fr;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(3rem, 5rem));
     padding: 1rem;
     border-radius: 1rem;
     color: var(--white);
@@ -541,7 +547,7 @@ body {
     display: flex;
     flex-direction: column;
     margin-bottom: 3rem;
-    background-color: var(--fleet-card);
+    background-color: var(--card);
 }
 
 .building-name {
@@ -673,7 +679,7 @@ body {
     justify-content: center;
     padding: 2rem 3rem;
     height: 100%;
-    width: calc(100%-6rem);
+    width: calc(100% - 6rem);
 }
 
 .vehicle-menu_interface-container {
@@ -681,6 +687,55 @@ body {
     height: 35rem;
 }
 
-.vehicle-menu_hint{
+.vehicle-menu_hint {
     font-size: 2rem;
+}
+
+.create-element {
+    all: unset;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    height: 10rem;
+    width: 10rem;
+    padding: 1.5rem;
+    color: var(--white);
+    border-radius: 1rem;
+    background-color: var(--red);
+    transition: .25s ease-in-out;
+    cursor: pointer;
+}
+
+.create-element:hover {
+    background-color: var(--red-hover);
+}
+
+.create-element .icon {
+    font-size: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem 1rem 0 0;
+    width: 100%;
+}
+
+.create-element .title {
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+
+.create-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding: 2rem;
 }

@@ -1,4 +1,6 @@
 import { database } from "../database.js";
+import { District } from "./district.js";
+import { pp } from "./popup.js";
 
 const newMission = new Worker('../../script/gen/mission.js');
 
@@ -224,7 +226,133 @@ class DIALOG {
         return;
     }
 
-    openAddDialog() {
+    async openAddDialog() {
+        const config = await fetch('http://127.0.0.1:5500/config/config.json')
+            .then((response) => {
+                return response.json();
+            })
+            .catch((err) => {
+                throw new Error(err);
+            });
+
+        const dialogUUID = crypto.randomUUID();
+
+        this.dialogBone.innerHTML = `
+            <article class="dialog-item">
+                <header class="dialog-head">
+                    <div class="header-text">
+                        <p>
+                            Verwaltung
+                        </p>
+                    </div>
+                    <div class="header-ui">
+                        <button class="close-dialog" id="close-dialog">
+                            <p>ESC</p>
+                            <span class="material-symbols-outlined">
+                                cancel
+                            </span>
+                        </button>    
+                    </div>
+                </header>
+    
+                <section class="create-content">
+                    <button class="create-element">
+                        <span class="icon material-symbols-outlined">
+                            garage
+                        </span>
+                        <div class="title">Fahrzeuge verwalten</div>
+                    </button>
+                    <button class="create-element">
+                        <span class="icon material-symbols-outlined">
+                            shopping_cart
+                        </span>
+                        <div class="title">Neue Fahrzeuge</div>
+                    </button>
+                    <button class="create-element">
+                        <span class="icon material-symbols-outlined">
+                            manage_accounts
+                        </span>
+                        <div class="title">Personal verwalten</div>
+                    </button>
+                    <button class="create-element">
+                        <span class="icon material-symbols-outlined">
+                            person_add
+                        </span>
+                        <div class="title">Personal einstellen</div>
+                    </button>
+                    </button>
+                    <button class="create-element">
+                        <span class="icon material-symbols-outlined">
+                            question_mark
+                        </span>
+                        <div class="title">Einsatzgebiet verwalten</div>
+                    </button>
+                    <button class="create-element" id="new-mission-area">
+                        <span class="icon material-symbols-outlined">
+                            question_mark
+                        </span>
+                        <div class="title">neues Einsatzgebiet</div>
+                    </button>
+                </section>
+            </article>
+            `;
+
+        this.dialogBone.id = dialogUUID;
+
+        this.dialogContainer.appendChild(this.dialogBone);
+
+        const thisDialog = document.getElementById(dialogUUID);
+        thisDialog.classList.add('dialog-admin');
+
+        thisDialog.showModal();
+
+        const closeDialog = document.querySelector('#close-dialog');
+        closeDialog.addEventListener('click', () => {
+            thisDialog.close();
+        })
+
+        const newMissionArea = document.querySelector('#new-mission-area');
+        newMissionArea.addEventListener('click', () => {
+            this.processAddDialog('district', { apiKey: config.APIKey });
+            thisDialog.close();
+        })
+    }
+
+    processAddDialog(type, options) {
+        switch (type) {
+            case 'district':
+                const interfaceContainer = document.querySelector('#map');
+                const interfaceBone = document.createElement('div');
+
+                interfaceBone.innerHTML = `
+                    <form>
+                        <label id='searchBoxPlaceholder' class='tt-form-label'></label>
+                    </form>
+                    <style>
+                        #foldable {
+                            width: 320px;
+                            z-index: 100;
+                            margin: 1rem;
+                        }
+                    </style>
+                `;
+
+                interfaceContainer.appendChild(interfaceBone);
+                interfaceBone.id = 'foldable';
+                interfaceBone.classList.add(['tt-overlay-panel', '-left-top', '-medium', 'js-foldable']);
+
+                pp.info('Wähle ein Gebiet für welches deine neue Wache zuständig sein soll. Nutze dafür die Suchleiste oben links. Es werden Landkreise, Kommunen oder Stadtteile als Einsatzgebiete verwendet.')
+
+                District.create(options.apiKey);
+                break;
+
+            default:
+                console.error('303 - Invalid input');
+                break;
+        }
+    }
+
+    crewDialog() {
         const dialogUUID = crypto.randomUUID();
 
         this.dialogBone.innerHTML = `
@@ -296,32 +424,32 @@ class DIALOG {
                 switch (childType) {
                     case 'ma':
                         hintArea.innerHTML = `Maschinist`;
-                    break;
+                        break;
                     case 'me':
                         hintArea.innerHTML = `Melder`;
-                    break;
+                        break;
                     case 'gf':
                         hintArea.innerHTML = `Gruppenführer`;
-                    break;
+                        break;
                     case 's-tf':
                         hintArea.innerHTML = `Schlauchtruppführer`;
-                    break;
+                        break;
                     case 's':
                         hintArea.innerHTML = `Schlauchtruppmann`;
-                    break;
+                        break;
                     case 'w-tf':
                         hintArea.innerHTML = `Wassertruppführer`;
-                    break;
+                        break;
                     case 'w':
                         hintArea.innerHTML = `Wassertruppmann`;
-                    break;
+                        break;
                     case 'a-tf':
                         hintArea.innerHTML = `Angriffstruppführer`;
-                    break;
+                        break;
                     case 'a':
                         hintArea.innerHTML = `Angriffstruppmann`;
-                    break;
-                        
+                        break;
+
                     default:
                         hintArea.innerHTML = `Gruppenmitglied unbekannt`;
                         break;
