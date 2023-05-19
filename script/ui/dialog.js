@@ -1,4 +1,5 @@
 import { database } from "../database.js";
+import { genLocation } from "../gen/location.js";
 import { District } from "./district.js";
 import { pp } from "./popup.js";
 
@@ -17,19 +18,30 @@ class DIALOG {
 
     async openMissionDialog(type) {
         try {
-
-            database.operateWithDB(undefined, 'GET').
-                then((r) => {
-                    r.data.forEach(async (mission) => {
-                        await this.setMissionContent(mission, mission.mission).then((setContentStatus) => {
-                            return setContentStatus;
-                        }).catch((err) => {
-                            throw new Error(err);
-                        });
-                    })
-                }).catch((err) => {
-                    throw new Error(`${err.code} - ${err.text}`);
+            const config = await fetch('http://127.0.0.1:5500/config/config.json')
+                .then((response) => {
+                    return response.json();
+                })
+                .catch((err) => {
+                    throw new Error(err);
                 });
+
+            database.get({
+                'database': 'missionStorage',
+                'version': 2,
+                'object_store': 'activeMission',
+                'keyPath': 'mission'
+            }).then((r) => {
+                r.data.forEach(async (mission) => {
+                    await this.setMissionContent(mission, mission.mission).then((setContentStatus) => {
+                        return setContentStatus;
+                    }).catch((err) => {
+                        throw new Error(err);
+                    });
+                })
+            }).catch((err) => {
+                throw new Error(`${err.code} - ${err.text}`);
+            });
 
             // create base ('bone')
             const dialogUUID = crypto.randomUUID();
@@ -97,6 +109,23 @@ class DIALOG {
 
                 const response = r.data;
 
+                const geoData = await database.get({
+                    'database': 'missionStorage',
+                    'version': 2,
+                    'object_store': 'missionArea',
+                    'keyPath': 'area'
+                }).then((r) => {
+                    return r.data[0].geoJSON;
+                }).catch((err) => {
+                    throw new Error(err);
+                });
+
+                await genLocation.withinPolygon(config.APIKey, geoData, true).then((r) => {
+                    response.data.emergencyHeader.location = r.data.addresses[0].address.freeformAddress;
+                }).catch((err) => {
+                    throw new Error(err);
+                });
+
                 if (response.status.code === 200) {
                     const rawText = response.data.emergencyText;
 
@@ -121,7 +150,14 @@ class DIALOG {
                     const textBone = document.createTextNode(text);
                     missionsDesc.appendChild(textBone);
 
-                    database.operateWithDB(response.data, 'POST');
+                    database.post({
+                        'database': 'missionStorage',
+                        'version': 2,
+                        'object_store': 'activeMission',
+                        'keyPath': 'mission'
+                    },
+                        response.data
+                    );
                 }
                 else if (response.status.code != 200) {
                     throw new Error(`${response.status.code} - ${response.status.text}`);
@@ -341,7 +377,7 @@ class DIALOG {
                 interfaceBone.id = 'foldable';
                 interfaceBone.classList.add(['tt-overlay-panel', '-left-top', '-medium', 'js-foldable']);
 
-                pp.info('Wähle ein Gebiet für welches deine neue Wache zuständig sein soll. Nutze dafür die Suchleiste oben links. Es werden Landkreise, Kommunen oder Stadtteile als Einsatzgebiete verwendet.')
+                // pp.info('Wähle ein Gebiet für welches deine neue Wache zuständig sein soll. Nutze dafür die Suchleiste oben links. Es werden Landkreise, Kommunen oder Stadtteile als Einsatzgebiete verwendet.')
 
                 District.create(options.apiKey);
                 break;

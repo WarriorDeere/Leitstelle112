@@ -15,12 +15,15 @@
     --purple-hover: rgb(160, 0, 125);
     --black: rgb(0, 0, 0);
     --black-hover: rgb(50, 50, 50);
-    --white: rgb(255, 255, 255);
-    --white-hover: rgb(225, 225, 225);
     --light-gray: rgb(230, 230, 230);
     --light-gray-hover: rgb(205, 206, 205);
     --gray: rgb(130, 130, 130);
     --gray-hover: rgb(145, 145, 145);
+
+    --text: rgb(75, 75, 75);
+    --text-alt: rgb(255, 145, 145);
+
+    --accent: rgb(50, 255, 0);
 
     --card: rgb(216, 216, 216);
     --detail-bg: rgb(170, 0, 0);
@@ -44,6 +47,12 @@ body {
 
 body {
     display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.material-symbols-outlined {
+    user-select: none !important;
 }
 
 .sidebar {
@@ -73,7 +82,7 @@ body {
 
 .sidebar-item button {
     all: unset;
-    color: var(--white);
+    color: white;
     cursor: pointer;
     display: flex;
     flex-direction: row;
@@ -83,7 +92,7 @@ body {
 }
 
 .sidebar-item button:hover {
-    color: var(--white-hover);
+    color: white;
     background-color: var(--red-hover);
 }
 
@@ -101,7 +110,7 @@ body {
     opacity: 0;
     font-size: 1rem;
     background-color: var(--red-hover);
-    color: var(--white-hover);
+    color: white;
     transition: opacity .2s ease-in-out;
     font-weight: 600;
     z-index: 99;
@@ -130,11 +139,6 @@ body {
     width: 100%;
 }
 
-.map-container iframe {
-    height: 100%;
-    width: 100%;
-}
-
 .dialog-container {
     height: fit-content;
     width: fit-content;
@@ -146,7 +150,7 @@ body {
 }
 
 .dialog-item {
-    height: 100%;
+    min-height: 100%;
     width: 100%;
 }
 
@@ -154,18 +158,6 @@ body {
     z-index: 100;
     user-select: none;
     box-shadow: 0 0 2rem 0 rgb(0, 0, 0, .4);
-}
-
-.dialog-container dialog::backdrop {
-    background-color: rgba(0, 0, 0, .3);
-    backdrop-filter: blur(5px);
-}
-
-.dialog-building,
-.dialog-radio,
-.dialog-new,
-.dialog-admin,
-.dialog-emergency {
     height: 90%;
     width: 90%;
     border-radius: 1rem;
@@ -173,9 +165,14 @@ body {
     padding: 0;
 }
 
+.dialog-container dialog::backdrop {
+    background-color: rgba(0, 0, 0, .3);
+    backdrop-filter: blur(5px);
+}
+
 .dialog-head {
     background-color: var(--red);
-    color: var(--white);
+    color: white;
     padding: 1rem 3rem;
     font-weight: 600;
     font-size: 1.5rem;
@@ -191,11 +188,9 @@ body {
 
 .em-dialog-content {
     display: grid;
-    min-width: min-content;
-    max-width: 90%;
     height: 100%;
-    grid-template-rows: repeat(auto-fill, minmax(15rem, 3fr));
-    grid-template-columns: repeat(auto-fit, minmax(25rem, 3fr));
+    grid-template-rows: repeat(auto-fill, 3fr);
+    grid-template-columns: repeat(auto-fit, 25rem);
     gap: 1rem;
     padding: 2rem;
 }
@@ -215,8 +210,8 @@ body {
     flex-direction: row;
     align-items: center;
     column-gap: .5rem;
-    border: .15rem solid var(--white);
-    color: var(--white);
+    border: .15rem solid white;
+    color: white;
     border-radius: .6rem;
     padding: .2rem .5rem;
     transition: color .2s ease-in-out, border .2s ease-in-out;
@@ -224,8 +219,8 @@ body {
 }
 
 .close-dialog:hover {
-    border: .15rem solid var(--white-hover);
-    color: var(--white-hover);
+    border: .15rem solid white;
+    color: white;
 }
 
 .close-dialog p {
@@ -246,7 +241,7 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(3rem, 5rem));
     padding: 1rem;
     border-radius: 1rem;
-    color: var(--white);
+    color: white;
     background: var(--red);
 }
 
@@ -312,7 +307,7 @@ body {
     font-size: 1rem;
     font-weight: 600;
     text-transform: uppercase;
-    color: var(--white);
+    color: white;
     padding: .4rem;
     border-radius: .4rem;
     transition: background-color .15s ease-in-out;
@@ -365,7 +360,7 @@ body {
 
 .vehicle-status,
 .sender-status {
-    color: var(--white);
+    color: white;
     margin: 0;
     padding: .2rem .5rem;
     border-top-right-radius: .5rem;
@@ -464,7 +459,7 @@ body {
     text-align: center;
     transition: background-color .15s ease-in-out;
     border-radius: 1rem;
-    color: var(--white);
+    color: white;
     padding: .2rem 0;
 }
 
@@ -509,7 +504,7 @@ body {
     border-radius: 1rem;
     column-gap: .5rem;
     background-color: var(--red);
-    color: var(--white);
+    color: white;
 }
 
 .group-name {
@@ -583,7 +578,7 @@ body {
     font-size: 1.2rem;
     cursor: pointer;
     border-radius: .5rem;
-    color: var(--white);
+    color: white;
     background-color: var(--detail-bg);
 }
 
@@ -700,7 +695,7 @@ body {
     height: 10rem;
     width: 10rem;
     padding: 1.5rem;
-    color: var(--white);
+    color: white;
     border-radius: 1rem;
     background-color: var(--red);
     transition: .25s ease-in-out;

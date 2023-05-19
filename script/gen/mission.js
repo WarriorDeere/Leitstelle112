@@ -102,8 +102,7 @@ class EMERGENCY {
         const finalEmergency = {
             emergencyHeader: {
                 title: final.title,
-                type: final.type,
-                location: final.location
+                type: final.type
             },
             emergencyText: final.text,
             emergencyDummy: finalDummy,

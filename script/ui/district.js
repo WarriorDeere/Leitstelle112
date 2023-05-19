@@ -1,4 +1,6 @@
+import { database } from "../database.js";
 import { map } from "../init/map.js";
+import { pp } from "./popup.js";
 
 class district {
 
@@ -67,20 +69,33 @@ class district {
 
             map.fitBounds(boundingBox, { padding: 100, linear: true });
 
-            const randomPointWithinPolygon = turf.randomPoint(1, { bbox: turf.bbox(additionalDataResult.geometryData) });
-            const randomCoordinate = randomPointWithinPolygon.features[0].geometry.coordinates;
-            var newMission = new tt.LngLat.convert(randomCoordinate);
+            pp.save(
+                {
+                    'display_text': 'Einsatzgebiet festlegen',
+                    'ui_text': {
+                        'save': 'Ok',
+                        'close': 'Abbrechen'
+                    }
+                },
+                () => {
+                    const uuid = crypto.randomUUID();
 
-            tt.services.reverseGeocode({
-                key: apiKey,
-                position: newMission
-            }).then((response) => {
-                var missionPp = new tt.Popup({ className: 'tt-popup', closeOnClick: false });
-                missionPp.setHTML(`<strong>Neuer Einsatz</strong><div>${response.addresses[0].address.municipality}, ${response.addresses[0].address.municipalitySubdivision}, ${response.addresses[0].address.streetNameAndNumber}</div>`);
-                missionPp.setLngLat(newMission);
-                missionPp.addTo(map);
-            });
-
+                    database.post({
+                        'database': 'missionStorage',
+                        'version': 1,
+                        'object_store': 'missionArea',
+                        'keyPath': 'area'
+                    },
+                        {
+                            area: uuid,
+                            geoJSON: additionalDataResult
+                        }
+                    );
+                },
+                () => {
+                    console.log('cancel');
+                }
+            );
         }
 
         function showPopup(searchResult) {
@@ -94,9 +109,13 @@ class district {
                 lat: roundLatLng(searchResult.position.lat)
             };
 
-            var popupResultName = '<strong>' + resultName + '</strong>';
-            var popupLatLon = '<div>' + resultPosition.lat + ', ' + resultPosition.lng + '</div>';
-            popup.setHTML('<div>' + popupResultName + popupLatLon + '</div>');
+            popup.setHTML(`
+                <div>
+                    <strong>${resultName}</strong>
+                    <br>
+                    <i>Das neue Einsatzgebiet ist Rot markiert.</i>
+                </div>
+            `);
             popup.setLngLat([resultPosition.lng, resultPosition.lat]);
             popup.addTo(map);
         }
@@ -175,7 +194,7 @@ class district {
             clearLayer(POLYGON_ID);
             clearLayer(OUTLINE_ID);
         });
-    
+
         const finalResult = {
             status: this.closeStatus,
             data: {

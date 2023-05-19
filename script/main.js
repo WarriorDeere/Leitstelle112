@@ -1,4 +1,6 @@
+import { database } from "./database.js";
 import { dialog } from "./ui/dialog.js";
+import { pp } from "./ui/popup.js";
 
 const data =
     await fetch('http://127.0.0.1:5500/config/config.json')
@@ -35,4 +37,3 @@ const toggleAddNewDialog = document.querySelector('#new');
 toggleAddNewDialog.addEventListener('click', () => {
     dialog.openAddDialog();
 });
-dialog.openAddDialog();

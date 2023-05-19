@@ -1,21 +1,70 @@
 import { map } from "../init/map.js";
 
 class location {
-    async withinPolygon(apiKey, additionalDataResult) {
 
-        const randomPointWithinPolygon = turf.randomPoint(1, { bbox: turf.bbox(additionalDataResult.geometryData) });
-        const randomCoordinate = randomPointWithinPolygon.features[0].geometry.coordinates;
-        var newMission = new tt.LngLat.convert(randomCoordinate);
+    /**
+     * @description generate a random location within a given polygon.
+     * @param {string} apiKey valid tomtom apiKey.
+     * @param {string} additionalDataResult polygon GeoJSON.
+     * @param {boolean} addToMap default: true. Whether a marker will added
+     */
 
-        tt.services.reverseGeocode({
-            key: apiKey,
-            position: newMission
-        }).then((response) => {
-            var missionPp = new tt.Popup({ className: 'tt-popup', closeOnClick: false });
-            missionPp.setHTML(`<strong>Neuer Einsatz</strong><div>${response.addresses[0].address.countrySubdivision}, ${response.addresses[0].address.municipality}, ${response.addresses[0].address.streetNameAndNumber}</div>`);
-            missionPp.setLngLat(newMission);
-            missionPp.addTo(map);
+    async withinPolygon(apiKey, additionalDataResult, addToMap) {
+        return new Promise((resolve, reject) => {
+            const randomPointWithinPolygon = turf.randomPoint(1, { bbox: turf.bbox(additionalDataResult.geometryData) });
+            const randomCoordinate = randomPointWithinPolygon.features[0].geometry.coordinates;
+            var newMission = new tt.LngLat.convert(randomCoordinate);
+
+            let response = {
+                'status': {
+                    code: 300,
+                    text: 'Closed without feedback'
+                },
+                'data': new Object(undefined)
+            };
+
+            if (!addToMap) {
+                tt.services.reverseGeocode({
+                    key: apiKey,
+                    position: newMission
+                }).then((r) => {
+                    response = {
+                        'status': {
+                            code: 200,
+                            text: 'Request successfull'
+                        },
+                        'data': r
+                    }
+                    resolve(response);
+                }).catch((err) => {
+                    reject(err);
+                });
+            }
+            else {
+                tt.services.reverseGeocode({
+                    key: apiKey,
+                    position: newMission
+                }).then((r) => {
+                    var missionPp = new tt.Popup({ className: 'tt-popup', closeOnClick: false });
+                    missionPp.setHTML(`<strong>Neuer Einsatz</strong><div>${r.addresses[0].address.municipality}, ${r.addresses[0].address.municipalitySubdivision}, ${r.addresses[0].address.streetNameAndNumber}</div>`);
+                    missionPp.setLngLat(newMission);
+                    missionPp.addTo(map);
+
+                    response = {
+                        'status': {
+                            code: 200,
+                            text: 'Request successfull'
+                        },
+                        'data': r
+                    }
+                    resolve(response);
+                }).catch((err) => {
+                    reject(err);
+                });
+            }
+
         });
+
     }
 }
 

@@ -1,102 +1,142 @@
 class DATABASE {
-    async operateWithDB(data, command) {
+    post(target, data) {
         return new Promise((resolve, reject) => {
-            let request = indexedDB.open('missionStorage', 1);
-            let resultFromGetMethod;
+            const request = indexedDB.open(target.database, target.version);
 
-            if (data === undefined && command === 'POST') {
-                this.closeStatus = {
-                    code: 304,
-                    text: 'Invalid input in combination with command'
-                };
-                reject(this.closeStatus);
-                throw new Error(`${this.closeStatus.code} - ${this.closeStatus.text}`);
-            }
-
-            request.onerror = (() => {
-                this.closeStatus = {
+            request.onerror = () => {
+                reject({
                     code: 301,
                     text: 'Operation failed'
-                };
-                resultFromGetMethod = {
-                    status: this.closeStatus,
-                    data: undefined
-                };
-                reject(this.closeStatus);
-            });
+                });
+            };
 
-            request.onupgradeneeded = ((event) => {
-                let db = event.target.result;
+            request.onsuccess = (e) => {
+                const db = e.target.result;
 
-                let activeMission = db.createObjectStore("activeMission", { keyPath: "mission" });
-            });
+                if (!db.objectStoreNames.contains(target.object_store)) {
+                    const version = db.version + 1;
+                    db.close();
 
-            request.onsuccess = ((event) => {
+                    const upgradeRequest = indexedDB.open(target.database, version);
 
-                if (command === 'GET') {
-                    let db = event.target.result;
-
-                    let transaction = db.transaction("activeMission", "readonly");
-                    let missionsStore = transaction.objectStore("activeMission");
-
-                    // Abfrage zum Abrufen aller Einträge im Objektstore
-                    let getAllRequest = missionsStore.getAll();
-
-                    getAllRequest.onerror = () => {
-                        this.closeStatus = {
-                            code: 301,
-                            text: 'Request failed'
-                        };
-                        reject(this.closeStatus);
-                    };
-
-                    resultFromGetMethod = {
-                        status: {
-                            code: 200,
-                            text: 'Operation successfull'
-                        },
-                        data: new Array()
-                    };
-
-                    getAllRequest.onsuccess = (event) => {
-                        event.target.result.forEach((mission) => {
-                            resultFromGetMethod.data.push(mission);
-                        });
-
-                        resolve(resultFromGetMethod);
-                    };
-                }
-
-                if (command === 'POST') {
-
-                    let db = event.target.result;
-
-                    let transaction = db.transaction("activeMission", "readwrite");
-                    let missionsStore = transaction.objectStore("activeMission");
-
-                    let addRequest = missionsStore.add(data);
-
-                    addRequest.onerror = (() => {
-                        this.closeStatus = {
+                    upgradeRequest.onerror = () => {
+                        reject({
                             code: 301,
                             text: 'Operation failed'
-                        };
-                        reject(this.closeStatus);
-                    });
+                        });
+                    };
 
-                    addRequest.onsuccess = (() => {
-                        this.closeStatus = {
+                    upgradeRequest.onupgradeneeded = (e) => {
+                        const upgradeDb = e.target.result;
+                        upgradeDb.createObjectStore(target.object_store, { keyPath: target.keyPath });
+                    };
+
+                    upgradeRequest.onsuccess = (e) => {
+                        const upgradeDb = e.target.result;
+
+                        const upgradeTransaction = upgradeDb.transaction([target.object_store], 'readwrite');
+                        const objectStore = upgradeTransaction.objectStore(target.object_store);
+
+                        const request = objectStore.add(data);
+
+                        request.onerror = (err) => {
+                            console.error(err.target.error);
+                            reject({
+                                code: 301,
+                                text: 'Operation failed',
+                                further: err.target.error
+                            });
+                        };
+
+                        request.onsuccess = () => {
+                            resolve({
+                                code: 200,
+                                text: 'Operation successful'
+                            });
+                        };
+
+                        upgradeTransaction.oncomplete = () => {
+                            upgradeDb.close();
+                        };
+                    };
+                } else {
+                    const transaction = db.transaction([target.object_store], 'readwrite');
+                    const objectStore = transaction.objectStore(target.object_store);
+
+                    const request = objectStore.add(data);
+
+                    request.onerror = (err) => {
+                        console.error(err.target.error);
+                        reject({
+                            code: 301,
+                            text: 'Operation failed',
+                            further: err.target.error
+                        });
+                    };
+
+                    request.onsuccess = () => {
+                        resolve({
                             code: 200,
-                            text: 'Operation successfull'
-                        };
-                        resolve(this.closeStatus);
-                    });
+                            text: 'Operation successful'
+                        });
+                    };
 
+                    transaction.oncomplete = () => {
+                        db.close();
+                    };
                 }
-
-            });
+            };
         });
+    }
 
+    get(target) {
+        return new Promise((resolve, reject) => {
+            let request = indexedDB.open(target.database, target.version);
+
+            request.onerror = (() => {
+                reject({
+                    code: 301,
+                    text: 'Operation failed'
+                });
+            });
+
+            request.onupgradeneeded = ((e) => {
+                let db = e.target.result;
+
+                let objStore = db.createObjectStore(target.object_store, { keyPath: target.keyPath });
+            });
+
+            request.onsuccess = ((e) => {
+                let db = e.target.result;
+
+                let transaction = db.transaction(target.object_store, "readonly");
+                let objectStore = transaction.objectStore(target.object_store);
+
+                let getAll = objectStore.getAll();
+
+                getAll.onerror = () => {
+                    reject({
+                        code: 301,
+                        text: 'Request failed'
+                    });
+                };
+
+                let r = {
+                    status: {
+                        code: 200,
+                        text: 'Operation successfull'
+                    },
+                    data: new Array()
+                };
+
+                getAll.onsuccess = (e) => {
+                    e.target.result.forEach((mission) => {
+                        r.data.push(mission);
+                    });
+                    resolve(r);
+                };
+            })
+        })
     }
 
 }
