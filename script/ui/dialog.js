@@ -262,7 +262,7 @@ class DIALOG {
         return;
     }
 
-    async openAddDialog() {
+    async openManageDialog() {
         const config = await fetch('http://127.0.0.1:5500/config/config.json')
             .then((response) => {
                 return response.json();
@@ -292,43 +292,63 @@ class DIALOG {
                 </header>
     
                 <section class="create-content">
-                    <button class="create-element">
-                        <span class="icon material-symbols-outlined">
-                            garage
-                        </span>
-                        <div class="title">Fahrzeuge verwalten</div>
-                    </button>
-                    <button class="create-element">
-                        <span class="icon material-symbols-outlined">
-                            shopping_cart
-                        </span>
-                        <div class="title">Neue Fahrzeuge</div>
-                    </button>
-                    <button class="create-element">
-                        <span class="icon material-symbols-outlined">
-                            manage_accounts
-                        </span>
-                        <div class="title">Personal verwalten</div>
-                    </button>
-                    <button class="create-element">
-                        <span class="icon material-symbols-outlined">
-                            person_add
-                        </span>
-                        <div class="title">Personal einstellen</div>
-                    </button>
-                    </button>
-                    <button class="create-element">
-                        <span class="icon material-symbols-outlined">
-                            question_mark
-                        </span>
-                        <div class="title">Einsatzgebiet verwalten</div>
-                    </button>
-                    <button class="create-element" id="new-mission-area">
-                        <span class="icon material-symbols-outlined">
-                            question_mark
-                        </span>
-                        <div class="title">neues Einsatzgebiet</div>
-                    </button>
+                    <div class="create-content-item">
+                        <div class="group-header">
+                            <h2>Fahrzeuge</h2>
+                        </div>
+                        <div class="group-item">
+                            <button class="create-element">
+                                <span class="icon material-symbols-outlined">
+                                    garage
+                                </span>
+                                <div class="title">Fahrzeuge verwalten</div>
+                            </button>
+                            <button class="create-element">
+                                <span class="icon material-symbols-outlined">
+                                    shopping_cart
+                                </span>
+                                <div class="title">Neue Fahrzeuge</div>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="create-content-item">
+                        <div class="group-header">
+                            <h2>Personal</h2>
+                        </div>
+                        <div class="group-item">
+                            <button class="create-element">
+                                <span class="icon material-symbols-outlined">
+                                    manage_accounts
+                                </span>
+                                <div class="title">Personal verwalten</div>
+                            </button>
+                            <button class="create-element">
+                                <span class="icon material-symbols-outlined">
+                                    person_add
+                                </span>
+                                <div class="title">Personal einstellen</div>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="create-content-item">
+                        <div class="group-header">
+                            <h2>Einsatzgebiete</h2>
+                        </div>
+                        <div class="group-item">
+                            <button class="create-element">
+                                <span class="icon material-symbols-outlined">
+                                    question_mark
+                                </span>
+                                <div class="title">Einsatzgebiet verwalten</div>
+                            </button>
+                            <button class="create-element" id="new-mission-area">
+                                <span class="icon material-symbols-outlined">
+                                    question_mark
+                                </span>
+                                <div class="title">neues Einsatzgebiet</div>
+                            </button>
+                        </div>
+                    </div>
                 </section>
             </article>
             `;

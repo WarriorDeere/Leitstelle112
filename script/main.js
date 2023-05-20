@@ -35,5 +35,6 @@ toggleBuildingDialog.addEventListener('click', () => {
 
 const toggleAddNewDialog = document.querySelector('#new');
 toggleAddNewDialog.addEventListener('click', () => {
-    dialog.openAddDialog();
+    dialog.openManageDialog();
 });
+dialog.openManageDialog();
