@@ -82,13 +82,15 @@ class district {
 
                     database.post({
                         'database': 'missionStorage',
-                        'version': 1,
+                        'version': 2,
                         'object_store': 'missionArea',
                         'keyPath': 'area'
                     },
                         {
                             area: uuid,
-                            geoJSON: additionalDataResult
+                            geoJSON: additionalDataResult,
+                            object_title: `Feuerwache ${searchResult.address.municipality} ${searchResult.address.municipalitySubdivision}`,
+                            area_title: `${searchResult.address.municipality} ${searchResult.address.municipalitySubdivision}`
                         }
                     );
                 },
@@ -99,7 +101,6 @@ class district {
         }
 
         function showPopup(searchResult) {
-            var resultName = searchResult.address && searchResult.address.freeformAddress;
             if (!searchResult.position) {
                 return;
             }
@@ -111,7 +112,7 @@ class district {
 
             popup.setHTML(`
                 <div>
-                    <strong>${resultName}</strong>
+                    <strong>${searchResult.address.municipality} ${searchResult.address.municipalitySubdivision}</strong>
                     <br>
                     <i>Das neue Einsatzgebiet ist Rot markiert.</i>
                 </div>

@@ -753,6 +753,7 @@ body {
     background-color: var(--card);
     border-radius: 1rem;
     padding: 2rem;
+    max-width: 100%;
 }
 
 .create-content-item .group-header {

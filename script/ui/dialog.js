@@ -1,6 +1,7 @@
 import { database } from "../database.js";
 import { genLocation } from "../gen/location.js";
 import { District } from "./district.js";
+import { gp } from "./parts/gen-part.js";
 import { pp } from "./popup.js";
 
 const newMission = new Worker('../../script/gen/mission.js');
@@ -335,11 +336,11 @@ class DIALOG {
                             <h2>Einsatzgebiete</h2>
                         </div>
                         <div class="group-item">
-                            <button class="create-element">
+                            <button class="create-element" id="manage-mission-area">
                                 <span class="icon material-symbols-outlined">
                                     question_mark
                                 </span>
-                                <div class="title">Einsatzgebiet verwalten</div>
+                                <div class="title">Einsatzgebiete verwalten</div>
                             </button>
                             <button class="create-element" id="new-mission-area">
                                 <span class="icon material-symbols-outlined">
@@ -369,8 +370,14 @@ class DIALOG {
 
         const newMissionArea = document.querySelector('#new-mission-area');
         newMissionArea.addEventListener('click', () => {
-            this.processAddDialog('district', { apiKey: config.APIKey });
             thisDialog.close();
+            this.processAddDialog('district', { apiKey: config.APIKey });
+        })
+
+        const manageMissionArea = document.querySelector('#manage-mission-area');
+        manageMissionArea.addEventListener('click', () => {
+            thisDialog.close();
+            this.missionAreaDialog();
         })
     }
 
@@ -406,6 +413,80 @@ class DIALOG {
                 console.error('303 - Invalid input');
                 break;
         }
+    }
+
+    async missionAreaDialog() {
+
+        const config = await fetch('http://127.0.0.1:5500/config/config.json')
+            .then((response) => {
+                return response.json();
+            })
+            .catch((err) => {
+                throw new Error(err);
+            });
+
+        const dialogUUID = crypto.randomUUID();
+
+        const dialogContentContainer = document.createElement('article');
+        dialogContentContainer.classList.add('dialog-item');
+        dialogContentContainer.id = `content-${dialogUUID}`;
+        this.dialogBone.appendChild(dialogContentContainer);
+        // gp.dialogHead(dialogUUID, 'Einsatzgebiete', `#content-${dialogUUID}`);
+
+        dialogContentContainer.innerHTML = `
+        <article class="dialog-item">
+                <header class="dialog-head">
+                    <div class="header-text">
+                        <p>
+                            Einsatzgebiete
+                        </p>
+                    </div>
+                    <div class="header-ui">
+                        <button class="close-dialog" id="close-dialog">
+                            <p>ESC</p>
+                            <span class="material-symbols-outlined">
+                                cancel
+                            </span>
+                        </button>    
+                    </div>
+                </header>
+                <section class="manage-mission-area">
+                    <div class="manage-desc">
+                        Hier sind deine Wachen übersichtlich aufgelistet. Du siehst dort welche Wache welches Einsatzgebiet zugewiesen hat und kannst dieses auch bearbeiten.
+                    </div>
+                    <div class="manage-mission-area-content">
+                        <table class="mission-area-list">
+                            <thead>
+                                <tr>
+                                    <th>Wache</th>
+                                    <th>Einsatzgebiet</th>
+                                </tr>
+                            </thead>
+                            <tbody id="list-${dialogUUID}"><tbody>
+                        </table>
+                    </div>
+                </section>
+        </article>`;
+
+
+        this.dialogBone.id = dialogUUID;
+        this.dialogContainer.appendChild(this.dialogBone);
+
+        await database.get({
+            'database': 'missionStorage',
+            'version': 2,
+            'object_store': 'missionArea',
+            'keyPath': 'area'
+        }).then((r) => {
+            gp.addContentToTable(`<tr class="list-item"><td class="list-title">${r.data[0].object_title}</td><td class="list-location">${r.data[0].area_title}</td><td class="list-ui" role="button"><span class="ui-item list-edit material-symbols-outlined">edit</span><span class="ui-item list-del material-symbols-outlined">delete</span></td></tr>`, `list-${dialogUUID}`, 'list-item');
+        }).catch((err) => {
+            throw new Error(err);
+        });
+
+        const thisDialog = document.getElementById(dialogUUID);
+        thisDialog.classList.add('dialog-mission-area');
+
+        thisDialog.showModal();
     }
 
     crewDialog() {

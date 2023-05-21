@@ -37,4 +37,3 @@ const toggleAddNewDialog = document.querySelector('#new');
 toggleAddNewDialog.addEventListener('click', () => {
     dialog.openManageDialog();
 });
-dialog.openManageDialog();
