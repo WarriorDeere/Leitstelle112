@@ -430,44 +430,29 @@ class DIALOG {
         const dialogContentContainer = document.createElement('article');
         dialogContentContainer.classList.add('dialog-item');
         dialogContentContainer.id = `content-${dialogUUID}`;
+        this.dialogBone.innerHTML = '';
         this.dialogBone.appendChild(dialogContentContainer);
-        // gp.dialogHead(dialogUUID, 'Einsatzgebiete', `#content-${dialogUUID}`);
+        const dialogContent = document.querySelector(`#content-${dialogUUID}`)
 
-        dialogContentContainer.innerHTML = `
-        <article class="dialog-item">
-                <header class="dialog-head">
-                    <div class="header-text">
-                        <p>
-                            Einsatzgebiete
-                        </p>
-                    </div>
-                    <div class="header-ui">
-                        <button class="close-dialog" id="close-dialog">
-                            <p>ESC</p>
-                            <span class="material-symbols-outlined">
-                                cancel
-                            </span>
-                        </button>    
-                    </div>
-                </header>
-                <section class="manage-mission-area">
-                    <div class="manage-desc">
-                        Hier sind deine Wachen übersichtlich aufgelistet. Du siehst dort welche Wache welches Einsatzgebiet zugewiesen hat und kannst dieses auch bearbeiten.
-                    </div>
-                    <div class="manage-mission-area-content">
-                        <table class="mission-area-list">
-                            <thead>
-                                <tr>
-                                    <th>Wache</th>
-                                    <th>Einsatzgebiet</th>
-                                </tr>
-                            </thead>
-                            <tbody id="list-${dialogUUID}"><tbody>
-                        </table>
-                    </div>
-                </section>
-        </article>`;
-
+        gp.dialogHead(dialogUUID, 'Einsatzgebiete', `#content-${dialogUUID}`);
+        const dialogContentBone = document.createElement('section');
+        dialogContentBone.innerHTML = `
+            <div class="manage-desc">
+                Hier sind deine Wachen übersichtlich aufgelistet. Du siehst dort welche Wache welches Einsatzgebiet zugewiesen hat und kannst dieses auch bearbeiten.
+            </div>
+            <div class="manage-mission-area-content">
+                <table class="mission-area-list">
+                    <thead>
+                        <tr>
+                            <th>Wache</th>
+                            <th>Einsatzgebiet</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list-${dialogUUID}"><tbody>
+                </table>
+            </div>`;
+        dialogContentBone.classList.add('manage-mission-area');
+        dialogContent.appendChild(dialogContentBone);
 
         this.dialogBone.id = dialogUUID;
         this.dialogContainer.appendChild(this.dialogBone);

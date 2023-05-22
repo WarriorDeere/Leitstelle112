@@ -48,7 +48,6 @@ class genPart {
                 uiButton.appendChild(buttonIconBone);
 
                 const cnt = document.querySelector(container);
-                console.log(cnt);
                 cnt.appendChild(bone)
 
                 resolve({
