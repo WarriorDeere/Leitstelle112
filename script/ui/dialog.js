@@ -415,6 +415,97 @@ class DIALOG {
         }
     }
 
+    async editMissionArea(title, areaDetail) {
+
+        const dialogUUID = crypto.randomUUID();
+
+        const dialogContentContainer = document.createElement('article');
+        dialogContentContainer.classList.add('dialog-item');
+        dialogContentContainer.id = `edit-mission-area-${dialogUUID}`;
+
+
+        this.dialogBone.innerHTML = '';
+        this.dialogBone.id = dialogUUID;
+        this.dialogBone.classList.add('dialog-edit-mission-area');
+
+        this.dialogBone.appendChild(dialogContentContainer);
+        this.dialogContainer.appendChild(this.dialogBone);
+        
+        gp.dialogHead(dialogUUID, title, `#edit-mission-area-${dialogUUID}`);
+
+        const dialogContent = document.querySelector(`#edit-mission-area-${dialogUUID}`);
+        const dialogContentBone = document.createElement('section');
+        dialogContentBone.innerHTML = `
+            <section class="e_sect-container">
+                <div class="edit-item edit-general">
+                    <div class="e_name">
+                        <span class="e_ui-hint">
+                            Wache
+                        </span>
+                        <span class="e_cur-val">
+                            ${areaDetail.object_title}
+                        </span>
+                        <input type="text">
+                    </div>
+                    <div class="e_area">
+                        <span class="e_ui-hint">
+                            Einsatzgebiet
+                        </span>
+                        <span class="e_cur-val">
+                            ${areaDetail.area_title}
+                        </span>
+                        <button id="add-area">
+                            <span class="material-symbols-outlined">
+                                edit
+                            </span>
+                        </button>
+                    </div>
+                    <div class="e_status">
+                        <span class="e_ui-hint">
+                            Status
+                        </span>
+                        <span class="e_cur-val">
+                            ${areaDetail.status} Verfügbar
+                        </span>
+                        <button id="toggle-status" class="ui dr-do">
+                            <span class="material-symbols-outlined">
+                                edit
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="e_sect-container e_s-con_closed">
+                <div class="edit-item edit-fleet">
+                    <div class="e_vehicle"></div>
+                    <div class="e_garage"></div>
+                </div>
+            </section>
+
+            <section class="e_sect-container e_s-con_closed">
+                <div class="edit-item edit-staff">
+                    <div class="e_staff"></div>
+                    <div class="e_recruit"></div>
+                </div>
+            </section>
+
+            <section class="e_sect-container e_s-con_closed">
+                <div class="edit-item edit-visuals">
+                    <div class="e_icon"></div>
+                </div>
+            </section>`;
+
+
+        dialogContentBone.classList.add('tune-area-content');
+        dialogContent.appendChild(dialogContentBone);
+
+        const thisDialog = document.getElementById(dialogUUID);
+        thisDialog.classList.add('dialog-mission-area');
+
+        thisDialog.showModal();
+    }
+
     async missionAreaDialog() {
 
         const config = await fetch('http://127.0.0.1:5500/config/config.json')
@@ -427,14 +518,15 @@ class DIALOG {
 
         const dialogUUID = crypto.randomUUID();
 
+        this.dialogBone.innerHTML = '';
         const dialogContentContainer = document.createElement('article');
+        this.dialogBone.appendChild(dialogContentContainer);
+
         dialogContentContainer.classList.add('dialog-item');
         dialogContentContainer.id = `content-${dialogUUID}`;
-        this.dialogBone.innerHTML = '';
-        this.dialogBone.appendChild(dialogContentContainer);
-        const dialogContent = document.querySelector(`#content-${dialogUUID}`)
+        const dialogContent = document.querySelector(`#content-${dialogUUID}`);
 
-        gp.dialogHead(dialogUUID, 'Einsatzgebiete', `#content-${dialogUUID}`);
+        gp.dialogHead(dialogUUID, 'Einsatzgebiete', `#${dialogContentContainer.id}`);
         const dialogContentBone = document.createElement('section');
         dialogContentBone.innerHTML = `
             <div class="manage-desc">
@@ -457,19 +549,39 @@ class DIALOG {
         this.dialogBone.id = dialogUUID;
         this.dialogContainer.appendChild(this.dialogBone);
 
+        const thisDialog = document.getElementById(dialogUUID);
+        thisDialog.classList.add('dialog-mission-area');
+
         await database.get({
             'database': 'missionStorage',
             'version': 2,
             'object_store': 'missionArea',
             'keyPath': 'area'
         }).then((r) => {
-            gp.addContentToTable(`<tr class="list-item"><td class="list-title">${r.data[0].object_title}</td><td class="list-location">${r.data[0].area_title}</td><td class="list-ui" role="button"><span class="ui-item list-edit material-symbols-outlined">edit</span><span class="ui-item list-del material-symbols-outlined">delete</span></td></tr>`, `list-${dialogUUID}`, 'list-item');
+            for (let i = 0; i < r.data.length; i++) {
+                gp.addContentToTable(
+                    `<tr class="list-item"><td class="list-title">${r.data[i].object_title}</td><td class="list-location">${r.data[i].area_title}</td><td class="list-ui"><span role="button" class="ui-item list-edit material-symbols-outlined" id="edit-${r.data[i].area}">tune</span><span role="button" class="ui-item list-del material-symbols-outlined" id="delete-${r.data[i].area}">delete</span></td></tr>`,
+                    `list-${dialogUUID}`,
+                    'list-item')
+                    .then(() => {
+                        const deleteItem = document.querySelector(`#delete-${r.data[i].area}`);
+                        deleteItem.addEventListener('click', () => {
+                            thisDialog.close();
+
+                        });
+                        const editItem = document.querySelector(`#edit-${r.data[i].area}`);
+                        editItem.addEventListener('click', () => {
+                            thisDialog.close();
+                            this.editMissionArea(`Einsatzgebiet ${r.data[i].area_title}`, r.data[i]);
+                        });
+                    })
+                    .catch((err) => {
+                        throw new Error(err);
+                    });
+            }
         }).catch((err) => {
             throw new Error(err);
         });
-
-        const thisDialog = document.getElementById(dialogUUID);
-        thisDialog.classList.add('dialog-mission-area');
 
         thisDialog.showModal();
     }

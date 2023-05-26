@@ -82,6 +82,11 @@
     width: 3rem;
 }
 
+.list-ui .list-del{
+    background-color: var(--red);
+    color: white;
+}
+
 .list-ui .list-edit:hover {
     border-radius: 1rem;
     background-color: var(--text-alt);
@@ -91,5 +96,24 @@
 .list-ui .list-del:hover {
     border-radius: 1rem;
     background-color: var(--red-hover);
-    color: white;
+}
+
+/* manage single area */
+
+.tune-area-content{
+    display: flex;
+    flex-direction: column;
+    margin: 2rem;
+    gap: 2rem;
+}
+
+.e_sect-container{
+    border-radius: 1rem;
+    background-color: var(--card);
+    padding: 1rem;
+}
+
+.edit-item{
+    display: flex;
+    flex-direction: column;
 }

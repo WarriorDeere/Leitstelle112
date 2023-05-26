@@ -1,5 +1,6 @@
 import { database } from "../database.js";
 import { map } from "../init/map.js";
+import { dialog } from "./dialog.js";
 import { pp } from "./popup.js";
 
 class district {
@@ -73,29 +74,39 @@ class district {
                 {
                     'display_text': 'Einsatzgebiet festlegen',
                     'ui_text': {
-                        'save': 'Ok',
+                        'save': 'Übernehmen',
                         'close': 'Abbrechen'
                     }
                 },
                 () => {
                     const uuid = crypto.randomUUID();
 
-                    database.post({
-                        'database': 'missionStorage',
-                        'version': 2,
-                        'object_store': 'missionArea',
-                        'keyPath': 'area'
-                    },
-                        {
-                            area: uuid,
-                            geoJSON: additionalDataResult,
-                            object_title: `Feuerwache ${searchResult.address.municipality} ${searchResult.address.municipalitySubdivision}`,
-                            area_title: `${searchResult.address.municipality} ${searchResult.address.municipalitySubdivision}`
-                        }
-                    );
+                    dialog.editMissionArea('Einsatzgebiet')
+
+                    // database.post({
+                    //     'database': 'missionStorage',
+                    //     'version': 2,
+                    //     'object_store': 'missionArea',
+                    //     'keyPath': 'area'
+                    // },
+                    //     {
+                    //         area: uuid,
+                    //         geoJSON: additionalDataResult,
+                    //         object_title: `Feuerwehr ${searchResult.address.municipality} ${searchResult.address.municipalitySubdivision}`,
+                    //         area_title: `${searchResult.address.municipality} ${searchResult.address.municipalitySubdivision}`
+                    //     }
+                    // );
+
+                    clearLayer(POLYGON_ID);
+                    clearLayer(OUTLINE_ID);
+                    popup.remove()
+                    ttSearchBox.onRemove();
                 },
                 () => {
-                    console.log('cancel');
+                    clearLayer(POLYGON_ID);
+                    clearLayer(OUTLINE_ID);
+                    popup.remove()
+                    ttSearchBox.onRemove();
                 }
             );
         }
