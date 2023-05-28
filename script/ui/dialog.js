@@ -1,10 +1,8 @@
 import { database } from "../database.js";
 import { genLocation } from "../gen/location.js";
+import { newMission } from "../main.js";
 import { District } from "./district.js";
 import { gp } from "./parts/gen-part.js";
-import { pp } from "./popup.js";
-
-const newMission = new Worker('../../script/gen/mission.js');
 
 class DIALOG {
 
@@ -17,16 +15,8 @@ class DIALOG {
         };
     }
 
-    async openMissionDialog(type) {
+    async openMissionDialog() {
         try {
-            const config = await fetch('http://127.0.0.1:5500/config/config.json')
-                .then((response) => {
-                    return response.json();
-                })
-                .catch((err) => {
-                    throw new Error(err);
-                });
-
             database.get({
                 'database': 'missionStorage',
                 'version': 2,
@@ -34,11 +24,13 @@ class DIALOG {
                 'keyPath': 'mission'
             }).then((r) => {
                 r.data.forEach(async (mission) => {
-                    await this.setMissionContent(mission, mission.mission).then((setContentStatus) => {
-                        return setContentStatus;
-                    }).catch((err) => {
-                        throw new Error(err);
-                    });
+                    await this.setMissionContent(mission, mission.mission)
+                        .then((setContentStatus) => {
+                            return setContentStatus;
+                        })
+                        .catch((err) => {
+                            throw new Error(err);
+                        });
                 })
             }).catch((err) => {
                 throw new Error(`${err.code} - ${err.text}`);
@@ -69,6 +61,7 @@ class DIALOG {
                 </article>
             `;
 
+
             this.dialogContainer.appendChild(this.dialogBone);
 
             const thisDialog = document.getElementById(dialogUUID);
@@ -76,122 +69,18 @@ class DIALOG {
 
             thisDialog.showModal();
 
+            const itemContainer = document.querySelector(`#dialog-item-${dialogUUID}`);
+            const itemBone = document.createElement('section');
+            
+            itemBone.id = 'dialog-content-container';
+            itemBone.classList.add('em-dialog-content');
+            itemBone.innerHTML = ``;
+            itemContainer.appendChild(itemBone);
+
             const closeDialog = document.querySelector('#close-dialog');
             closeDialog.addEventListener('click', () => {
                 thisDialog.close();
-            })
-
-            const itemContainer = document.querySelector(`#dialog-item-${dialogUUID}`);
-            const itemBone = document.createElement('section');
-
-            //set content
-
-            const missionUUID = crypto.randomUUID();
-
-            switch (type) {
-                case 'fd':
-                    const post = {
-                        missionType: 'fire',
-                        missionUUID: missionUUID
-                    }
-                    newMission.postMessage(post);
-                    break;
-
-                default:
-                    this.closeStatus = {
-                        code: 301,
-                        text: 'Operation failed'
-                    };
-                    console.error(this.closeStatus);
-                    break;
-            }
-
-            newMission.onmessage = async (r) => {
-
-                const response = r.data;
-
-                const geoData = await database.get({
-                    'database': 'missionStorage',
-                    'version': 2,
-                    'object_store': 'missionArea',
-                    'keyPath': 'area'
-                }).then((r) => {
-                    return r.data[0].geoJSON;
-                }).catch((err) => {
-                    throw new Error(err);
-                });
-
-                await genLocation.withinPolygon(config.APIKey, geoData, true).then((r) => {
-                    response.data.emergencyHeader.location = r.data.addresses[0].address.freeformAddress;
-                }).catch((err) => {
-                    throw new Error(err);
-                });
-
-                if (response.status.code === 200) {
-                    const rawText = response.data.emergencyText;
-
-                    function repPlaceholder() {
-                        const filteredText = rawText.replace('${NAME}', response.data.emergencyDummy);
-                        return filteredText;
-                    };
-
-                    const missionsDesc = document.querySelector(`#mission-text-${missionUUID}`);
-                    missionsDesc.innerHTML = '';
-
-                    const missionTitle = document.querySelector(`#mission-title-${missionUUID}`);
-                    missionTitle.innerHTML = response.data.emergencyHeader.title;
-
-                    const missionType = document.querySelector(`#mission-type-${missionUUID}`);
-                    missionType.innerHTML = response.data.emergencyHeader.type;
-
-                    const missionLocation = document.querySelector(`#mission-location-${missionUUID}`);
-                    missionLocation.innerHTML = response.data.emergencyHeader.location;
-
-                    const text = await repPlaceholder();
-                    const textBone = document.createTextNode(text);
-                    missionsDesc.appendChild(textBone);
-
-                    database.post({
-                        'database': 'missionStorage',
-                        'version': 2,
-                        'object_store': 'activeMission',
-                        'keyPath': 'mission'
-                    },
-                        response.data
-                    );
-                }
-                else if (response.status.code != 200) {
-                    throw new Error(`${response.status.code} - ${response.status.text}`);
-                }
-            }
-
-            itemBone.classList.add('em-dialog-content');
-            itemBone.id = 'dialog-content-container';
-            itemBone.innerHTML = `
-            <div class="dialog-content-item" id="${missionUUID}">
-                <div class="emergency-content">
-                    <div class="emergency-head emergency-fire">
-                        <div class="emergency-icon">
-                            <img src="https://cdn-icons-png.flaticon.com/512/1453/1453025.png">
-                        </div>
-                        <div class="emergency-title" id="mission-title-${missionUUID}">Stichwort lädt...</div>
-                        <div class="emergency-type" id="mission-type-${missionUUID}">Kategorie lädt...</div>
-                        <div class="emergency-location" id="mission-location-${missionUUID}">Adresse lädt...</div>
-                    </div>
-                    <div class="emergency-information">
-                        <div class="emergency-desc">
-                            <p id="mission-text-${missionUUID}">Text lädt...</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="emergency-interface">
-                    <button class="emergency-cancel">Abbrechen</button>
-                    <button class="emergency-respond">Annehmen</button>
-                </div>
-            </div>
-            `
-
-            itemContainer.appendChild(itemBone);
+            });
 
             this.closeStatus = {
                 code: 200,
@@ -241,7 +130,8 @@ class DIALOG {
         const rawText = content.emergencyText;
 
         function repPlaceholder() {
-            const filteredText = rawText.replace('${NAME}', content.emergencyDummy);
+            let filteredText = rawText.replaceAll('${NAME}', content.emergencyDummy);
+            filteredText = filteredText.replaceAll('${ADRESSE}', content.emergencyHeader.location);
             return filteredText;
         };
 
@@ -430,44 +320,37 @@ class DIALOG {
 
         this.dialogBone.appendChild(dialogContentContainer);
         this.dialogContainer.appendChild(this.dialogBone);
-        
+
         gp.dialogHead(dialogUUID, title, `#edit-mission-area-${dialogUUID}`);
 
         const dialogContent = document.querySelector(`#edit-mission-area-${dialogUUID}`);
         const dialogContentBone = document.createElement('section');
         dialogContentBone.innerHTML = `
             <section class="e_sect-container">
-                <div class="edit-item edit-general">
-                    <div class="e_name">
+                <div class="edit-item-cont edit-general">
+                    <div class="e_item e_name">
                         <span class="e_ui-hint">
                             Wache
                         </span>
-                        <span class="e_cur-val">
-                            ${areaDetail.object_title}
-                        </span>
-                        <input type="text">
+                        <input type="text" value="${areaDetail.object_title}">
                     </div>
-                    <div class="e_area">
+                    <div class="e_item e_area">
                         <span class="e_ui-hint">
                             Einsatzgebiet
                         </span>
-                        <span class="e_cur-val">
-                            ${areaDetail.area_title}
-                        </span>
                         <button id="add-area">
+                            ${areaDetail.area_title}
                             <span class="material-symbols-outlined">
                                 edit
                             </span>
                         </button>
                     </div>
-                    <div class="e_status">
+                    <div class="e_item e_status">
                         <span class="e_ui-hint">
                             Status
                         </span>
-                        <span class="e_cur-val">
-                            ${areaDetail.status} Verfügbar
-                        </span>
                         <button id="toggle-status" class="ui dr-do">
+                            ${areaDetail.status}    
                             <span class="material-symbols-outlined">
                                 edit
                             </span>

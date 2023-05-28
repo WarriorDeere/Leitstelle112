@@ -17,8 +17,11 @@
     --black-hover: rgb(50, 50, 50);
     --light-gray: rgb(230, 230, 230);
     --light-gray-hover: rgb(205, 206, 205);
-    --gray: rgb(130, 130, 130);
+    --gray: rgb(175, 175, 175);
     --gray-hover: rgb(145, 145, 145);
+
+    --table-main: rgb(255, 100, 0);
+    --table-secondary: rgb(255, 75, 0);
 
     --text: rgb(75, 75, 75);
     --text-alt: rgb(255, 145, 145);
