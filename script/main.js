@@ -2,6 +2,7 @@ import { database } from "./database.js";
 import { genLocation } from "./gen/location.js";
 import { itemOnMap } from "./gen/onmap.js";
 import { dialog } from "./ui/dialog.js";
+import { pp } from "./ui/popup.js";
 
 export const newMission = new Worker('../../script/gen/mission.js');
 
@@ -52,14 +53,33 @@ toggleAddNewDialog.addEventListener('click', () => {
     dialog.openManageDialog();
 });
 
+
+// const rNumb = new Array();
+// for (let i = 0; i < 10; i++) {
+//     const numb = Math.random()*100
+//     rNumb.push(Math.round(numb));
+// }
+// const randomInterval = rNumb[Math.round(Math.random()*10)]*1000; //time in seconds
+
+let i;
+
+const openMissions = localStorage.getItem('open_mission');
+
+isNaN(openMissions ? i = openMissions : i = 0);
+console.log(i);
+
 setInterval(() => {
-    const missionUUID = crypto.randomUUID();
-    const cmd = {
-        missionType: 'fire',
-        missionUUID: missionUUID
+    if (i < 12) {
+        const missionUUID = crypto.randomUUID();
+        const cmd = {
+            missionType: 'fire',
+            missionUUID: missionUUID
+        }
+        newMission.postMessage(cmd);
+        i++;
+        localStorage.setItem('open_mission', i);
     }
-    newMission.postMessage(cmd);
-}, 60000);
+}, 6000);
 
 newMission.onmessage = async (r) => {
 

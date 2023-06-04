@@ -13,6 +13,10 @@ class onMap {
         missionMarker.setLngLat(data.emergencyHeader.lngLat);
         missionMarker.addTo(map);
     }
+
+    getAreaFromClick(apiKey){
+        // MunicipalitySubdivision
+    }
 }
 
 export const itemOnMap = new onMap();

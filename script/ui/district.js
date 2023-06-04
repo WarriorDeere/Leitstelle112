@@ -72,10 +72,14 @@ class district {
 
             pp.save(
                 {
-                    'display_text': 'Einsatzgebiet festlegen',
                     'ui_text': {
                         'save': 'Übernehmen',
                         'close': 'Abbrechen'
+                    },
+                    'user_input':{
+                        'add': true,
+                        'id': 'object-title',
+                        'display': 'Name deiner Wache'
                     }
                 },
                 () => {
@@ -83,19 +87,23 @@ class district {
 
                     dialog.editMissionArea('Einsatzgebiet')
 
-                    // database.post({
-                    //     'database': 'missionStorage',
-                    //     'version': 2,
-                    //     'object_store': 'missionArea',
-                    //     'keyPath': 'area'
-                    // },
-                    //     {
-                    //         area: uuid,
-                    //         geoJSON: additionalDataResult,
-                    //         object_title: `Feuerwehr ${searchResult.address.municipality} ${searchResult.address.municipalitySubdivision}`,
-                    //         area_title: `${searchResult.address.municipality} ${searchResult.address.municipalitySubdivision}`
-                    //     }
-                    // );
+                    const objectTitle = document.querySelector('#object-title');
+                    let objectLocation;
+
+                    database.post({
+                        'database': 'missionStorage',
+                        'version': 2,
+                        'object_store': 'missionArea',
+                        'keyPath': 'area'
+                    },
+                        {
+                            area: uuid,
+                            geoJSON: additionalDataResult,
+                            object_title: objectTitle.value,
+                            object_location: objectLocation,
+                            area_title: `${searchResult.address.municipality} ${searchResult.address.municipalitySubdivision}`
+                        }
+                    );
 
                     clearLayer(POLYGON_ID);
                     clearLayer(OUTLINE_ID);

@@ -146,3 +146,25 @@
 .pp_save {
     background-color: white;
 }
+
+/* toolhint */
+
+.pp_tool-hint {
+    background-color: white;
+    height: fit-content;
+    z-index: 101;
+    width: 100%;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    font-size: .95rem;
+}
+
+.pp_tool-hint h1{
+    width: 100%;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: .5rem;
+}

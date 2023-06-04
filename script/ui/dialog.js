@@ -1,8 +1,10 @@
 import { database } from "../database.js";
 import { genLocation } from "../gen/location.js";
+import { map } from "../init/map.js";
 import { newMission } from "../main.js";
 import { District } from "./district.js";
 import { gp } from "./parts/gen-part.js";
+import { pp } from "./popup.js";
 
 class DIALOG {
 
@@ -13,6 +15,10 @@ class DIALOG {
             code: 300,
             text: 'Closed without feedback'
         };
+    }
+
+    update(id, content) {
+
     }
 
     async openMissionDialog() {
@@ -71,7 +77,7 @@ class DIALOG {
 
             const itemContainer = document.querySelector(`#dialog-item-${dialogUUID}`);
             const itemBone = document.createElement('section');
-            
+
             itemBone.id = 'dialog-content-container';
             itemBone.classList.add('em-dialog-content');
             itemBone.innerHTML = ``;
@@ -281,21 +287,103 @@ class DIALOG {
                     <form>
                         <label id='searchBoxPlaceholder' class='tt-form-label'></label>
                     </form>
-                    <style>
-                        #foldable {
-                            width: 320px;
-                            z-index: 100;
-                            margin: 1rem;
-                        }
-                    </style>
                 `;
 
                 interfaceContainer.appendChild(interfaceBone);
                 interfaceBone.id = 'foldable';
                 interfaceBone.classList.add(['tt-overlay-panel', '-left-top', '-medium', 'js-foldable']);
 
-                // pp.info('Wähle ein Gebiet für welches deine neue Wache zuständig sein soll. Nutze dafür die Suchleiste oben links. Es werden Landkreise, Kommunen oder Stadtteile als Einsatzgebiete verwendet.')
+                pp.toolHint('<h1> <span class="material-symbols-outlined">tips_and_updates</span> Tipp</h1><p>Einsatzgebiete sind feste Zonen, in welchen neue Einsätze auftreten. Du kannst Städte, Kommunen oder Stadtteile bzw. Bezirke wählen.</p><p>Entweder suchst du nach dem Namen in der Suchleiste oben oder du klickst mit der Maus auf die Karte um einen Stadtteil bzw. Bezirk zu markieren.</p><p>Jede Wache muss ein Einsatzgebiet zugewiesen haben.</p>', '#foldable');
 
+                map.on('click', (pnt) => {
+
+                    function clearLayer(layerID) {
+                        if (map.getLayer(layerID)) {
+                            map.removeLayer(layerID);
+                            map.removeSource(layerID);
+                        }
+                    }
+
+                    clearLayer('geo_filler');
+                    clearLayer('geo_line');
+
+                    tt.services.reverseGeocode({
+                        key: options.apiKey,
+                        position: pnt.lngLat,
+                        entityType: 'MunicipalitySubdivision',
+                        language: 'de-DE'
+                    }).then((r) => {
+                        new Promise((resolve) => {
+                            if (r.addresses[0] === undefined) {
+                                let areaHint = new tt.Popup()
+                                    .setLngLat(pnt.lngLat)
+                                    .setHTML(`<strong>Kein Stadtteil gefunden!</strong><br>An dieser Position konnte kein Stadtteil gefunden werden`)
+                                    .addTo(map)
+                                resolve();
+                            }
+                            else {
+                                let geometryId = r.addresses[0].dataSources.geometry.id;
+
+                                fitMap(r.addresses[0].address);
+                                showPopUp(r.addresses[0].position, r.addresses[0].address);
+                                tt.services.additionalData({
+                                    key: options.apiKey,
+                                    geometries: [geometryId],
+                                    geometriesZoom: 22
+                                }).then((r) => {
+                                    let additionalDataResult = r && r.additionalData && r.additionalData[0];
+                                    let geoJson = additionalDataResult && additionalDataResult.geometryData;
+                                    map.addLayer({
+                                        id: 'geo_filler',
+                                        type: 'fill',
+                                        source: {
+                                            type: 'geojson',
+                                            data: geoJson
+                                        },
+                                        paint: {
+                                            'fill-color': '#ff0000',
+                                            'fill-opacity': .35
+                                        }
+                                    });
+                                    map.addLayer({
+                                        id: 'geo_line',
+                                        type: 'line',
+                                        source: {
+                                            type: 'geojson',
+                                            data: geoJson
+                                        },
+                                        paint: {
+                                            'line-color': '#ff0000',
+                                            'line-width': 1
+                                        }
+                                    });
+                                });
+
+                                resolve();
+                            }
+                        })
+
+                    }).catch((err) => {
+                        throw new Error(err);
+                    });
+
+                    function fitMap(searchResult) {
+                        let boundingBox = searchResult.boundingBox || searchResult.viewport;
+                        boundingBox = new tt.LngLatBounds([
+                            [boundingBox.southWest.lng, boundingBox.southWest.lat],
+                            [boundingBox.northEast.lng, boundingBox.northEast.lat]
+                        ]);
+
+                        map.fitBounds(boundingBox, { padding: 100, linear: true });
+                    }
+
+                    function showPopUp(position, address) {
+                        let areaHint = new tt.Popup()
+                            .setLngLat(position)
+                            .setHTML(`<strong>Einsatzgebiet</strong><br>${address.freeformAddress}`)
+                            .addTo(map)
+                    }
+                });
                 District.create(options.apiKey);
                 break;
 

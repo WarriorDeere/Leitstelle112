@@ -38,6 +38,10 @@
     --color-misc: rgb(0, 130, 50);
 }
 
+*::selection{
+    background-color: rgba(0, 0, 0, .25);
+}
+
 html,
 body {
     margin: 0;
@@ -730,7 +734,7 @@ body {
     width: 100%;
 }
 
-.create-content{
+.create-content {
     padding: 2rem;
     display: flex;
     flex-direction: row;
@@ -780,4 +784,13 @@ body {
     justify-content: center;
     flex-wrap: wrap;
     gap: 2rem;
+}
+
+#foldable {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    z-index: 100;
+    width: 20rem;
+    margin: 1rem;
 }
