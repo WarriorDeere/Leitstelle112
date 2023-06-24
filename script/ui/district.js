@@ -72,27 +72,25 @@ class district {
 
             pp.save(
                 {
-                    'ui_text': {
+                    'ui_text':
+                    {
                         'save': 'Übernehmen',
                         'close': 'Abbrechen'
                     },
-                    'user_input':{
+                    'user_input': {
                         'add': true,
                         'id': 'object-title',
-                        'display': 'Name deiner Wache'
+                        'display': 'Name des Einsatzgebiet'
                     }
                 },
                 () => {
                     const uuid = crypto.randomUUID();
-
-                    dialog.editMissionArea('Einsatzgebiet')
-
                     const objectTitle = document.querySelector('#object-title');
                     let objectLocation;
 
                     database.post({
                         'database': 'missionStorage',
-                        'version': 2,
+                        'version': 1,
                         'object_store': 'missionArea',
                         'keyPath': 'area'
                     },
@@ -129,13 +127,7 @@ class district {
                 lat: roundLatLng(searchResult.position.lat)
             };
 
-            popup.setHTML(`
-                <div>
-                    <strong>${searchResult.address.municipality} ${searchResult.address.municipalitySubdivision}</strong>
-                    <br>
-                    <i>Das neue Einsatzgebiet ist Rot markiert.</i>
-                </div>
-            `);
+            popup.setHTML(`<strong>Einsatzgebiet</strong><br><i>${searchResult.freeformAddress}</i><br><p>Bereits Zugewiesene Wachen: 0</p>`);
             popup.setLngLat([resultPosition.lng, resultPosition.lat]);
             popup.addTo(map);
         }
@@ -152,7 +144,7 @@ class district {
             if (!searchResult) {
                 return;
             }
-            return new Promise(function (resolve) {
+            return new Promise((resolve) => {
                 clearLayer(POLYGON_ID);
                 clearLayer(OUTLINE_ID);
                 showLoadingPopup();

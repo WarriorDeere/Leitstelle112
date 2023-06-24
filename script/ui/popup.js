@@ -1,27 +1,24 @@
 class popup {
-
-    constructor() {
-        this.container = document.querySelector('body');
-        this.popupBone = document.createElement('div');
-    }
-
     /**
      * @param {string} inp text to display
      */
 
     info(inp) {
-        this.popupBone.remove();
+        const container = document.querySelector('body');
+        const popupBone = document.createElement('div');
+
+        popupBone.remove();
         const uuid = crypto.randomUUID();
 
-        this.popupBone.classList.add('pp_dialog');
-        this.popupBone.innerHTML = `<span class="pp-icon material-symbols-outlined">lightbulb</span><div class="pp-text">${inp}</div><span class="pp-close material-symbols-outlined" id="close-${uuid}">close</span>`;
+        popupBone.classList.add('pp_dialog');
+        popupBone.innerHTML = `<span class="pp-icon material-symbols-outlined">lightbulb</span><div class="pp-text">${inp}</div><span class="pp-close material-symbols-outlined" id="close-${uuid}">close</span>`;
 
-        this.popupBone.classList.add('info');
-        this.container.appendChild(this.popupBone);
+        popupBone.classList.add('info');
+        container.appendChild(popupBone);
 
         const close_pp = document.querySelector(`#close-${uuid}`);
         close_pp.addEventListener('click', () => {
-            this.popupBone.remove();
+            popupBone.remove();
         })
     }
 
@@ -33,17 +30,25 @@ class popup {
                 'save': 'button to save',
                 'close': 'button to cancel'
             }
+            'user_input': {
+                'add': true,
+                'id': 'valid CSS selector',
+                'display': 'text to display'
+            }
         }
      * @param {CallableFunction} onSave
      * @param {CallableFunction} onCancel
      */
 
     save(inp, onSave, onCancel) {
-        this.popupBone.remove();
+        const container = document.querySelector('body');
+        const popupBone = document.createElement('div');
+
+        popupBone.remove();
         const uuid = crypto.randomUUID();
 
-        this.popupBone.classList.add('pp_action');
-        this.popupBone.innerHTML = `
+        popupBone.classList.add('pp_action');
+        popupBone.innerHTML = `
             <span class="pp-icon material-symbols-outlined">save</span>
             <div class="pp_action-inp" id="input-container"></div>
             <div class="pp_action-ui">
@@ -55,6 +60,9 @@ class popup {
                 </button>
             </div>`;
 
+        container.appendChild(popupBone);
+        popupBone.classList.add('pp_save');
+
         if (inp.user_input.add) {
             const inputElement = document.createElement('input');
             const inputContainer = document.querySelector('#input-container');
@@ -64,19 +72,16 @@ class popup {
             inputContainer.appendChild(inputElement);
         }
 
-        this.popupBone.classList.add('pp_save');
-        this.container.appendChild(this.popupBone);
-
         const pp_save = document.querySelector(`#save-${uuid}`);
         pp_save.addEventListener('click', () => {
-            this.popupBone.remove();
             onSave();
+            popupBone.remove();
         })
 
         const pp_cancel = document.querySelector(`#cancel-${uuid}`);
         pp_cancel.addEventListener('click', () => {
-            this.popupBone.remove();
             onCancel();
+            popupBone.remove();
         })
 
     }
@@ -87,12 +92,16 @@ class popup {
      */
 
     toolHint(input, container) {
-        this.popupBone.remove();
+        const popupBone = document.createElement('div');
+
+        popupBone.remove();
+        popupBone.classList.remove('pp_tool-hint');
+
         const uuid = crypto.randomUUID();
-        this.popupBone.classList.add('pp_tool-hint');
-        this.popupBone.id = uuid;
-        document.querySelector(container).appendChild(this.popupBone);
-        this.popupBone.innerHTML = input;
+        popupBone.classList.add('pp_tool-hint');
+        popupBone.id = uuid;
+        document.querySelector(container).appendChild(popupBone);
+        popupBone.innerHTML = input;
     }
 }
 

@@ -1,3 +1,4 @@
+import { TT_API_KEY } from "../env.js";
 import { database } from "./database.js";
 import { genLocation } from "./gen/location.js";
 import { itemOnMap } from "./gen/onmap.js";
@@ -6,26 +7,18 @@ import { pp } from "./ui/popup.js";
 
 export const newMission = new Worker('../../script/gen/mission.js');
 
-const config = await fetch('http://127.0.0.1:5500/config/config.json')
-    .then((response) => {
-        return response.json();
-    })
-    .catch((err) => {
-        throw new Error(err);
-    });
-
-database.get({
-    'database': 'missionStorage',
-    'version': 2,
-    'object_store': 'activeMission',
-    'keyPath': 'mission'
-}).then((r) => {
-    r.data.forEach(async (mission) => {
-        itemOnMap.loadMarker(mission);
-    })
-}).catch((err) => {
-    throw new Error(`${err.code} - ${err.text}`);
-});
+// database.get({
+//     'database': 'missionStorage',
+//     'version': 1,
+//     'object_store': 'activeMission',
+//     'keyPath': 'mission'
+// }).then((r) => {
+//     r.data.forEach(async (mission) => {
+//         itemOnMap.loadMarker(mission);
+//     })
+// }).catch((err) => {
+//     throw new Error(`${err.code} - ${err.text}`);
+// });
 
 const toggleEmergencyDialog = document.querySelector('#emergency');
 toggleEmergencyDialog.addEventListener('click', async () => {
@@ -62,58 +55,73 @@ toggleAddNewDialog.addEventListener('click', () => {
 // const randomInterval = rNumb[Math.round(Math.random()*10)]*1000; //time in seconds
 
 let i;
-
-const openMissions = localStorage.getItem('open_mission');
-
-isNaN(openMissions ? i = openMissions : i = 0);
-console.log(i);
+let allowMissionGen = false;
 
 setInterval(() => {
-    if (i < 12) {
+    const openMissions = localStorage.getItem('open_mission');
+    const gameHasArea = localStorage.getItem('gameHasArea');
+
+    if (gameHasArea === null) {
+        localStorage.setItem('gameHasArea', false);
+    }
+
+    if (openMissions === null) {
+        localStorage.setItem('open_mission', 0);
+        i = 0;
+    }
+
+    console.log(openMissions);
+    console.log(i);
+
+    if (gameHasArea && i < 12) {
+        allowMissionGen = true;
+    }
+
+    if (allowMissionGen) {
         const missionUUID = crypto.randomUUID();
         const cmd = {
             missionType: 'fire',
             missionUUID: missionUUID
         }
         newMission.postMessage(cmd);
-        i++;
-        localStorage.setItem('open_mission', i);
+
+        newMission.onmessage = async (r) => {
+
+            const response = r.data;
+
+            const geoData = await database.get({
+                'database': 'area',
+                'version': 1,
+                'object_store': 'area_building',
+                'keyPath': 'area'
+            }).then((r) => {
+                return r.data[0].geoJSON;
+            }).catch((err) => {
+                throw new Error(err);
+            });
+
+            await genLocation.withinPolygon(TT_API_KEY, geoData, true).then((r) => {
+                response.data.emergencyHeader.location = r.data.addresses[0].address.freeformAddress;
+                response.data.emergencyHeader.lngLat = r.data.addresses[0].position;
+            }).catch((err) => {
+                throw new Error(err);
+            });
+
+            if (response.status.code === 200) {
+                database.post({
+                    'database': 'mission',
+                    'version': 1,
+                    'object_store': 'mission_active',
+                    'keyPath': 'mission'
+                },
+                    response.data
+                );
+                i++;
+                localStorage.setItem('open_mission', i);
+            }
+            else if (response.status.code != 200) {
+                throw new Error(`${response.status.code} - ${response.status.text}`);
+            }
+        }
     }
-}, 6000);
-
-newMission.onmessage = async (r) => {
-
-    const response = r.data;
-
-    const geoData = await database.get({
-        'database': 'missionStorage',
-        'version': 2,
-        'object_store': 'missionArea',
-        'keyPath': 'area'
-    }).then((r) => {
-        return r.data[0].geoJSON;
-    }).catch((err) => {
-        throw new Error(err);
-    });
-
-    await genLocation.withinPolygon(config.APIKey, geoData, true).then((r) => {
-        response.data.emergencyHeader.location = r.data.addresses[0].address.freeformAddress;
-        response.data.emergencyHeader.lngLat = r.data.addresses[0].position;
-    }).catch((err) => {
-        throw new Error(err);
-    });
-
-    if (response.status.code === 200) {
-        database.post({
-            'database': 'missionStorage',
-            'version': 2,
-            'object_store': 'activeMission',
-            'keyPath': 'mission'
-        },
-            response.data
-        );
-    }
-    else if (response.status.code != 200) {
-        throw new Error(`${response.status.code} - ${response.status.text}`);
-    }
-}
+}, 5000);

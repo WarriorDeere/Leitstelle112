@@ -14,7 +14,7 @@ class DATABASE {
                 const db = e.target.result;
 
                 if (!db.objectStoreNames.contains(target.object_store)) {
-                    const version = db.version + 1;
+                    const version = db.version;
                     db.close();
 
                     const upgradeRequest = indexedDB.open(target.database, version);

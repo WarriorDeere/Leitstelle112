@@ -1,3 +1,4 @@
+import { TT_API_KEY } from "../../env.js";
 import { database } from "../database.js";
 import { genLocation } from "../gen/location.js";
 import { map } from "../init/map.js";
@@ -17,16 +18,12 @@ class DIALOG {
         };
     }
 
-    update(id, content) {
-
-    }
-
     async openMissionDialog() {
         try {
             database.get({
-                'database': 'missionStorage',
-                'version': 2,
-                'object_store': 'activeMission',
+                'database': 'mission',
+                'version': 1,
+                'object_store': 'mission_active',
                 'keyPath': 'mission'
             }).then((r) => {
                 r.data.forEach(async (mission) => {
@@ -160,14 +157,6 @@ class DIALOG {
     }
 
     async openManageDialog() {
-        const config = await fetch('http://127.0.0.1:5500/config/config.json')
-            .then((response) => {
-                return response.json();
-            })
-            .catch((err) => {
-                throw new Error(err);
-            });
-
         const dialogUUID = crypto.randomUUID();
 
         this.dialogBone.innerHTML = `
@@ -267,7 +256,7 @@ class DIALOG {
         const newMissionArea = document.querySelector('#new-mission-area');
         newMissionArea.addEventListener('click', () => {
             thisDialog.close();
-            this.processAddDialog('district', { apiKey: config.APIKey });
+            this.processAddDialog('district', { apiKey: TT_API_KEY });
         })
 
         const manageMissionArea = document.querySelector('#manage-mission-area');
@@ -380,7 +369,7 @@ class DIALOG {
                     function showPopUp(position, address) {
                         let areaHint = new tt.Popup()
                             .setLngLat(position)
-                            .setHTML(`<strong>Einsatzgebiet</strong><br>${address.freeformAddress}`)
+                            .setHTML(`<strong>Einsatzgebiet</strong><br><i>${address.freeformAddress}</i><br><p>Bereits Zugewiesene Wachen: 0</p>`)
                             .addTo(map)
                     }
                 });
@@ -479,14 +468,6 @@ class DIALOG {
 
     async missionAreaDialog() {
 
-        const config = await fetch('http://127.0.0.1:5500/config/config.json')
-            .then((response) => {
-                return response.json();
-            })
-            .catch((err) => {
-                throw new Error(err);
-            });
-
         const dialogUUID = crypto.randomUUID();
 
         this.dialogBone.innerHTML = '';
@@ -524,9 +505,9 @@ class DIALOG {
         thisDialog.classList.add('dialog-mission-area');
 
         await database.get({
-            'database': 'missionStorage',
-            'version': 2,
-            'object_store': 'missionArea',
+            'database': 'area',
+            'version': 1,
+            'object_store': 'area_building',
             'keyPath': 'area'
         }).then((r) => {
             for (let i = 0; i < r.data.length; i++) {

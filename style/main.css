@@ -6,7 +6,7 @@
     --light-green: rgb(0, 165, 0);
     --light-green-hover: rgb(0, 150, 70);
     --red: rgb(255, 0, 0);
-    --red-hover: rgb(190, 0, 0);
+    --red-hover: rgb(160, 0, 0);
     --orange: rgb(255, 150, 0);
     --orange-hover: rgb(255, 100, 0);
     --blue: rgb(0, 110, 255);
@@ -788,9 +788,6 @@ body {
 
 #foldable {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
     z-index: 100;
-    width: 20rem;
     margin: 1rem;
 }
