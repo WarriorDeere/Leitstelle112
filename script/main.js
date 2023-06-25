@@ -7,18 +7,18 @@ import { pp } from "./ui/popup.js";
 
 export const newMission = new Worker('../../script/gen/mission.js');
 
-// database.get({
-//     'database': 'missionStorage',
-//     'version': 1,
-//     'object_store': 'activeMission',
-//     'keyPath': 'mission'
-// }).then((r) => {
-//     r.data.forEach(async (mission) => {
-//         itemOnMap.loadMarker(mission);
-//     })
-// }).catch((err) => {
-//     throw new Error(`${err.code} - ${err.text}`);
-// });
+database.get({
+    'database': 'mission',
+    'version': 1,
+    'object_store': 'mission_active',
+    'keyPath': 'mission'
+}).then((r) => {
+    r.data.forEach(async (mission) => {
+        itemOnMap.loadMarker(mission);
+    })
+}).catch((err) => {
+    throw new Error(`${err.code} - ${err.text}`);
+});
 
 const toggleEmergencyDialog = document.querySelector('#emergency');
 toggleEmergencyDialog.addEventListener('click', async () => {
@@ -61,23 +61,38 @@ setInterval(() => {
     const openMissions = localStorage.getItem('open_mission');
     const gameHasArea = localStorage.getItem('gameHasArea');
 
-    if (gameHasArea === null) {
-        localStorage.setItem('gameHasArea', false);
-    }
+    database.get({
+        'database': 'area',
+        'version': 1,
+        'object_store': 'area_building',
+        'keyPath': 'area'
+    }).then((r) => {
+        if (r.status.code === 200) {
+            localStorage.setItem('gameHasArea', true);
+        }
+        else {
+            localStorage.setItem('gameHasArea', false);
+        }
+    }).catch((err) => {
+        throw new Error(`${err.code} - ${err.text}`);
+    });
 
-    if (openMissions === null) {
+    if (openMissions === null || isNaN(openMissions)) {
         localStorage.setItem('open_mission', 0);
         i = 0;
     }
 
-    console.log(openMissions);
-    console.log(i);
-
-    if (gameHasArea && i < 12) {
+    if (gameHasArea && openMissions < 12) {
         allowMissionGen = true;
+    }
+    else {
+        allowMissionGen = false;
     }
 
     if (allowMissionGen) {
+        i++;
+        localStorage.setItem('open_mission', Number(i));
+
         const missionUUID = crypto.randomUUID();
         const cmd = {
             missionType: 'fire',
@@ -116,12 +131,10 @@ setInterval(() => {
                 },
                     response.data
                 );
-                i++;
-                localStorage.setItem('open_mission', i);
             }
             else if (response.status.code != 200) {
                 throw new Error(`${response.status.code} - ${response.status.text}`);
             }
         }
     }
-}, 5000);
+}, 10000);

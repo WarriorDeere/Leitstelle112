@@ -73,7 +73,7 @@ class genPart {
                 const target = document.getElementById(container);
                 const bone = document.createElement('tr');
                 bone.classList.add(contentClass);
-                bone.innerHTML = content;
+                bone.innerHTML = content.replace('undefined', '');
                 target.appendChild(bone);
 
                 resolve({

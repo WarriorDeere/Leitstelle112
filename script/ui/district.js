@@ -89,9 +89,9 @@ class district {
                     let objectLocation;
 
                     database.post({
-                        'database': 'missionStorage',
+                        'database': 'area',
                         'version': 1,
-                        'object_store': 'missionArea',
+                        'object_store': 'area_building',
                         'keyPath': 'area'
                     },
                         {
@@ -101,7 +101,13 @@ class district {
                             object_location: objectLocation,
                             area_title: `${searchResult.address.municipality} ${searchResult.address.municipalitySubdivision}`
                         }
-                    );
+                    ).then((r) => {
+                        if (r.code === 200) {
+                            localStorage.setItem('gameHasArea', true);
+                        }
+                    }).catch((err) => {
+                        throw new Error(err)
+                    });
 
                     clearLayer(POLYGON_ID);
                     clearLayer(OUTLINE_ID);

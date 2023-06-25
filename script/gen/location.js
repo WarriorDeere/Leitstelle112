@@ -45,8 +45,12 @@ class location {
                     key: apiKey,
                     position: newMission
                 }).then((r) => {
+                    const municipality = String(r.addresses[0].address.municipality);
+                    const municipalitySubdivision = String(r.addresses[0].address.municipalitySubdivision);
+                    const streetNameAndNumber = String(r.addresses[0].address.streetNameAndNumber);
+
                     var missionPp = new tt.Popup({ className: 'tt-popup', closeOnClick: false });
-                    missionPp.setHTML(`<strong>Neuer Einsatz</strong><div>${r.addresses[0].address.municipality}, ${r.addresses[0].address.municipalitySubdivision}, ${r.addresses[0].address.streetNameAndNumber}</div>`);
+                    missionPp.setHTML(`<strong>Neuer Einsatz</strong><div>${municipality.replace('undefined', '')}, ${municipalitySubdivision.replace('undefined', '')}, ${streetNameAndNumber.replace('undefined', '')}</div>`);
                     missionPp.setLngLat(newMission);
                     missionPp.addTo(map);
 
