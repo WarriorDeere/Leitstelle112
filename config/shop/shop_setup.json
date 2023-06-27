@@ -1,0 +1,30 @@
+{
+    "category": {
+        "fire_engine": {
+            "default": {
+                "price": 15000
+            }
+        },
+        "operation_manager": {
+            "default": {
+                "price": 35000
+            }
+        },
+        "ladder_engine": {
+            "default": {
+                "price": 20000
+            }
+        }
+    },
+    "currency": {
+        "default": "EUR",
+        "custom": [
+            "USD",
+            "GBP",
+            "JPY"
+        ]
+    },
+    "units": {
+        "default": "METRIC"
+    }
+}

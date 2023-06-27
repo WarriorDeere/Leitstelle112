@@ -1,8 +1,26 @@
 class EMERGENCY {
 
     constructor() {
-        this.missionURL = 'http://127.0.0.1:5500/blueprints/missions.json';
-        this.dummyURL = 'http://127.0.0.1:5500/blueprints/dummy.json';
+
+        function fetchPaths() {
+            return new Promise(async (resolve, reject) => {
+                await fetch('http://127.0.0.1:5500/config/app.json')
+                    .then(async (r) => {
+                        const configObject = await r.json();
+                        resolve(configObject.paths);
+                    })
+                    .catch((err) => {
+                        reject(err);
+                        throw new Error(err);
+                    });
+            })
+        }
+
+        const missionPath = fetchPaths().then((r) => { return r.missions });
+        const dummyPath = fetchPaths().then((r) => { return r.dummy });
+
+        this.missionURL = `http://127.0.0.1:5500/${missionPath}`;
+        this.dummyURL = `http://127.0.0.1:5500/${dummyPath}`;
         this.closeStatus = {
             code: 300,
             text: 'Closed without feedback'
@@ -113,10 +131,10 @@ class EMERGENCY {
     }
 }
 
-const emergency = new EMERGENCY();
+const mission = new EMERGENCY();
 
 onmessage = async (input) => {
-    await emergency.genMission(input.data.missionType, input.data.missionUUID).then((r) => {
+    await mission.genMission(input.data.missionType, input.data.missionUUID).then((r) => {
         const response = {
             status: {
                 code: 200,

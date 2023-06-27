@@ -1,0 +1,145 @@
+{
+    "vehicle": [
+        {
+            "type": "HLF 20",
+            "crew": [
+                {
+                    "type": "AT",
+                    "type_long": "Angriffstrupp",
+                    "amount": 1,
+                    "use_default_icon": true,
+                    "required": false
+                },
+                {
+                    "type": "AT-F",
+                    "type_long": "Angriffstruppführer",
+                    "amount": 1,
+                    "use_default_icon": true,
+                    "required": true
+                },
+                {
+                    "type": "ST",
+                    "type_long": "Schlauchtrupp",
+                    "amount": 1,
+                    "use_default_icon": true,
+                    "required": false
+                },
+                {
+                    "type": "ST-F",
+                    "type_long": "Schlauchtruppführer",
+                    "amount": 1,
+                    "use_default_icon": true,
+                    "required": true
+                }
+            ],
+            "crew_max": 9,
+            "crew_min": 1,
+            "fill_types": [
+                "foam",
+                "water"
+            ],
+            "equipment": [
+                "accident_kit"
+            ],
+            "scba_kit": {
+                "on_board": true,
+                "amount": 2
+            },
+            "hose": {
+                "on_board": true,
+                "amount": [
+                    150,
+                    true
+                ]
+            },
+            "category": "fire_engine",
+            "price": {
+                "use_default_price": true
+            },
+            "currency": {
+                "use_default_currency": true
+            }
+        },
+        {
+            "type": "ELW 1",
+            "crew": [
+                {
+                    "type": "ZF",
+                    "type_long": "Zugführer",
+                    "amount": 1,
+                    "use_default_icon": true,
+                    "required": true
+                },
+                {
+                    "type": "GF",
+                    "type_long": "Gruppenführer",
+                    "amount": 1,
+                    "use_default_icon": true,
+                    "required": true
+                },
+                {
+                    "type": "A-Dienst",
+                    "type_long": "Einsatzleiter",
+                    "amount": 1,
+                    "use_default_icon": true,
+                    "required": true
+                }
+            ],
+            "crew_max": 3,
+            "crew_min": 2,
+            "fill_types": [],
+            "equipment": [],
+            "scba_kit": {
+                "on_board": false
+            },
+            "hose": {
+                "on_board": false,
+                "amount": [
+                    150,
+                    true
+                ]
+            },
+            "category": "operation_manager",
+            "price": {
+                "use_default_price": true
+            },
+            "currency": {
+                "use_default_currency": true
+            }
+        },
+        {
+            "type": "DLK 23",
+            "crew": [
+                {
+                    "type": "MA-D",
+                    "type_long": "Maschinist (Drehleiter)",
+                    "amount": 1,
+                    "use_default_icon": true,
+                    "required": true
+                }
+            ],
+            "crew_max": 3,
+            "crew_min": 2,
+            "fill_types": [],
+            "equipment": [],
+            "scba_kit": {
+                "on_board": true,
+                "amount": 2
+            },
+            "hose": {
+                "on_board": true,
+                "amount": [
+                    200,
+                    true
+                ]
+            },
+            "category": "ladder_engine",
+            "price": {
+                "use_default_price": true
+            },
+            "currency": {
+                "use_default_currency": true
+            }
+        }
+    ]
+}

@@ -4,6 +4,7 @@ import { genLocation } from "../gen/location.js";
 import { map } from "../init/map.js";
 import { newMission } from "../main.js";
 import { District } from "./district.js";
+import { fleet } from "./fleet.js";
 import { gp } from "./parts/gen-part.js";
 import { pp } from "./popup.js";
 
@@ -163,7 +164,7 @@ class DIALOG {
             <article class="dialog-item">
                 <header class="dialog-head">
                     <div class="header-text">
-                        <p>
+                        <p id="dialog-title-${dialogUUID}">
                             Verwaltung
                         </p>
                     </div>
@@ -177,19 +178,19 @@ class DIALOG {
                     </div>
                 </header>
     
-                <section class="create-content">
+                <section class="create-content" id="content-${dialogUUID}">
                     <div class="create-content-item">
                         <div class="group-header">
                             <h2>Fahrzeuge</h2>
                         </div>
                         <div class="group-item">
-                            <button class="create-element">
+                            <button class="create-element" id="manage-fleet">
                                 <span class="icon material-symbols-outlined">
                                     garage
                                 </span>
                                 <div class="title">Fahrzeuge verwalten</div>
                             </button>
-                            <button class="create-element">
+                            <button class="create-element" id="add-fleet">
                                 <span class="icon material-symbols-outlined">
                                     shopping_cart
                                 </span>
@@ -253,6 +254,19 @@ class DIALOG {
             thisDialog.close();
         })
 
+        const manageFleet = document.querySelector('#manage-fleet');
+        manageFleet.addEventListener('click', () => {
+            fleet.manage();
+        });
+        
+        const addFleet = document.querySelector('#add-fleet');
+        addFleet.addEventListener('click', () => {
+            fleet.add({
+                'content': `content-${dialogUUID}`,
+                'title': `dialog-title-${dialogUUID}`
+            });
+        });
+        
         const newMissionArea = document.querySelector('#new-mission-area');
         newMissionArea.addEventListener('click', () => {
             thisDialog.close();
