@@ -4,30 +4,32 @@
             "type": "HLF 20",
             "crew": [
                 {
+                    "type": "MA",
+                    "type_long": "Maschinist",
+                    "use_default_icon": true,
+                    "required": true
+                },
+                {
                     "type": "AT",
-                    "type_long": "Angriffstrupp",
-                    "amount": 1,
+                    "type_long": "Angriffstruppmann",
                     "use_default_icon": true,
                     "required": false
                 },
                 {
                     "type": "AT-F",
                     "type_long": "Angriffstruppführer",
-                    "amount": 1,
                     "use_default_icon": true,
                     "required": true
                 },
                 {
                     "type": "ST",
-                    "type_long": "Schlauchtrupp",
-                    "amount": 1,
+                    "type_long": "Schlauchtruppmann",
                     "use_default_icon": true,
                     "required": false
                 },
                 {
                     "type": "ST-F",
                     "type_long": "Schlauchtruppführer",
-                    "amount": 1,
                     "use_default_icon": true,
                     "required": true
                 }
@@ -35,21 +37,22 @@
             "crew_max": 9,
             "crew_min": 1,
             "fill_types": [
-                "foam",
-                "water"
+                [
+                    "foam",
+                    500
+                ],
+                [
+                    "water",
+                    1600
+                ]
             ],
-            "equipment": [
-                "accident_kit"
-            ],
-            "scba_kit": {
-                "on_board": true,
-                "amount": 2
-            },
-            "hose": {
-                "on_board": true,
-                "amount": [
-                    150,
-                    true
+            "equipment": {
+                "default": {
+                    "scba": 2,
+                    "hose": 200
+                },
+                "vehicle_specific": [
+                    "accident_kit"
                 ]
             },
             "category": "fire_engine",
@@ -66,21 +69,18 @@
                 {
                     "type": "ZF",
                     "type_long": "Zugführer",
-                    "amount": 1,
                     "use_default_icon": true,
                     "required": true
                 },
                 {
                     "type": "GF",
                     "type_long": "Gruppenführer",
-                    "amount": 1,
                     "use_default_icon": true,
                     "required": true
                 },
                 {
                     "type": "A-Dienst",
                     "type_long": "Einsatzleiter",
-                    "amount": 1,
                     "use_default_icon": true,
                     "required": true
                 }
@@ -88,15 +88,10 @@
             "crew_max": 3,
             "crew_min": 2,
             "fill_types": [],
-            "equipment": [],
-            "scba_kit": {
-                "on_board": false
-            },
-            "hose": {
-                "on_board": false,
-                "amount": [
-                    150,
-                    true
+            "equipment": {
+                "default": {},
+                "vehicle_specific": [
+                    "operation_management_kit"
                 ]
             },
             "category": "operation_manager",
@@ -113,7 +108,6 @@
                 {
                     "type": "MA-D",
                     "type_long": "Maschinist (Drehleiter)",
-                    "amount": 1,
                     "use_default_icon": true,
                     "required": true
                 }
@@ -121,16 +115,13 @@
             "crew_max": 3,
             "crew_min": 2,
             "fill_types": [],
-            "equipment": [],
-            "scba_kit": {
-                "on_board": true,
-                "amount": 2
-            },
-            "hose": {
-                "on_board": true,
-                "amount": [
-                    200,
-                    true
+            "equipment": {
+                "default": {
+                    "scba": 2,
+                    "hose": 150
+                },
+                "vehicle_specific": [
+                    "rescue_kit"
                 ]
             },
             "category": "ladder_engine",
