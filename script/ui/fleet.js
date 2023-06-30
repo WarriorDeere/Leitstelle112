@@ -36,10 +36,30 @@ export const fleet = new class {
             })
             .catch((err) => {
                 throw new Error(err);
+            });
+
+        const shopSetupData = fetchPaths()
+            .then(async (r) => {
+                const path = await r.shop_setup;
+                return path;
             })
+            .then(async (path) => {
+                return await fetch(`http://127.0.0.1:5500/${path}`)
+                    .then(async (r) => {
+                        const data = await r.json();
+                        return data;
+                    })
+                    .catch((err) => {
+                        throw new Error(err);
+                    });
+            })
+            .catch((err) => {
+                throw new Error(err);
+            });
 
         const content = document.querySelector(`#${identifier.content}`);
         const vehicleArray = await shopItemData.then((r) => { return r.vehicle })
+        const categoryObject = await shopSetupData.then((r) => { return r.category })
         content.innerHTML = '';
 
         vehicleArray.forEach(async vehicle => {
@@ -52,17 +72,50 @@ export const fleet = new class {
             const vehicleType = String(vehicle.type);
 
             vehicleCardBone.innerHTML = `
-            <div class="vc-type">${vehicleType}</div>
+
+            <div class="vc-header">
+                <img class="vc-icon" src="https://xn--feuerwehr-fssen-9vb.de/wp-content/uploads/2019/07/HLF-20-2019-06-05-001.jpg">
+                ${vehicleType}
+            </div>
+            <div class="vc-strength">Personal: zwischen ${Number(vehicle.crew_min)} und ${Number(vehicle.crew_max)}</div>
             <div class="vc-crew" id="crew-member-area-${vehicleCardUUID}">Mögliche Aufteilung: </div>
-            <div class="vc-inventory" id="inventory-area-${vehicleCardUUID}"></div>
-            <div class="vc-interact"></div>
+            <div class="vc-default-inventory" id="default-inventory-area-${vehicleCardUUID}"></div>
+            <div class="vc-extra-inventory" id="extra-inventory-area-${vehicleCardUUID}"></div>
+            <div class="vc-interact">
+                <span class="buy-price-area">
+                    <span id="price-${vehicleCardUUID}">Kaufpreis lädt</span>                        
+                    <span class="material-symbols-outlined">
+                        payments
+                    </span>
+                </span>
+                <span class="material-symbols-outlined">
+                    shopping_cart
+                </span>                
+            </div>
             `;
 
-            const crewCardContainer = document.querySelector(`#crew-member-area-${vehicleCardUUID}`);
+            const vehiclePriceDOM = document.querySelector(`#price-${vehicleCardUUID}`);
+            if (vehicle.price.use_default_price) {
+                if (vehicle.category in categoryObject) {
+                    if (!isNaN(categoryObject[vehicle.category].default.price)) {
+                        vehiclePriceDOM.innerHTML = Number(categoryObject[vehicle.category].default.price);
+                    }
+                    else {
+                        vehiclePriceDOM.innerHTML = `Error: x001e02 - invalid value, '##shop_setup.json##.price' must be a number`;
+                        throw new Error(`Error: x001e02 - invalid value, '##shop_setup.json##.price' must be a number`);
+                    }
+                }
+                else {
+                    vehiclePriceDOM.innerHTML = `Error: x002e01 - not found, '##shop_setup.json##.category' was not found`;
+                    throw new Error(`Error: x002e01 - not found, '##shop_setup.json##.category' was not found`);
+                }
+            }
+            else {
+                vehiclePriceDOM.innerHTML = `Error: x001e - invalid value, '##shop_items.json##.use_default_price' must be set to 'true'`;
+                throw new Error(`Error: x001e - invalid value, '##shop_items.json##.use_default_price' must be set to 'true'`);
+            }
 
-            const crewStrengthCardBone = document.createElement('div');
-            crewStrengthCardBone.innerHTML = `Personal: zwischen ${Number(vehicle.crew_min)} und ${Number(vehicle.crew_max)}`;
-            crewCardContainer.appendChild(crewStrengthCardBone);
+            const crewCardContainer = document.querySelector(`#crew-member-area-${vehicleCardUUID}`);
 
             vehicle.crew.forEach(crewMember => {
                 const crewMemberUUID = crypto.randomUUID();
@@ -79,8 +132,8 @@ export const fleet = new class {
                 crewCardContainer.appendChild(crewMemberCardBone);
             });
 
-            const inventoryCardContainer = document.querySelector(`#inventory-area-${vehicleCardUUID}`);
-            
+            const extraInventoryCardContainer = document.querySelector(`#extra-inventory-area-${vehicleCardUUID}`);
+
             vehicle.equipment.vehicle_specific.forEach(kit => {
                 const kitUUID = crypto.randomUUID();
                 const equipmentKitBone = document.createElement('div');
@@ -95,8 +148,10 @@ export const fleet = new class {
                     equipmentKitBone.innerHTML = `Zusätzliche Ausrüstung: ${String(kit)}`;
                 }
 
-                inventoryCardContainer.appendChild(equipmentKitBone);
+                extraInventoryCardContainer.appendChild(equipmentKitBone);
             });
+
+            const defaultInventoryCardContainer = document.querySelector(`#default-inventory-area-${vehicleCardUUID}`);
 
             if (vehicle.equipment.default) {
                 const defaultKitUUID = crypto.randomUUID();
@@ -105,7 +160,7 @@ export const fleet = new class {
                 defaultKitBone.classList.add('equipment-kit-card');
                 defaultKitBone.id = `default-kit-${defaultKitUUID}`;
 
-                inventoryCardContainer.appendChild(defaultKitBone);
+                defaultInventoryCardContainer.appendChild(defaultKitBone);
                 if (vehicle.equipment.default.hose) {
                     const hoseTextDOM = document.createTextNode(`Schläuche: ${Number(vehicle.equipment.default.hose)}m`);
                     defaultKitBone.appendChild(hoseTextDOM);

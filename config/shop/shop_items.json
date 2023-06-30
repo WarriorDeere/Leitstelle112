@@ -58,9 +58,6 @@
             "category": "fire_engine",
             "price": {
                 "use_default_price": true
-            },
-            "currency": {
-                "use_default_currency": true
             }
         },
         {
@@ -97,9 +94,6 @@
             "category": "operation_manager",
             "price": {
                 "use_default_price": true
-            },
-            "currency": {
-                "use_default_currency": true
             }
         },
         {
@@ -127,9 +121,6 @@
             "category": "ladder_engine",
             "price": {
                 "use_default_price": true
-            },
-            "currency": {
-                "use_default_currency": true
             }
         }
     ]

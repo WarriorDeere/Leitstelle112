@@ -16,14 +16,6 @@
             }
         }
     },
-    "currency": {
-        "default": "EUR",
-        "custom": [
-            "USD",
-            "GBP",
-            "JPY"
-        ]
-    },
     "units": {
         "default": "METRIC"
     }

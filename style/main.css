@@ -735,11 +735,11 @@ body {
 }
 
 .create-content {
-    padding: 2rem;
+    padding: 1rem;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .create-content-container {
