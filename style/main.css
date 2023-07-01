@@ -38,7 +38,7 @@
     --color-misc: rgb(0, 130, 50);
 }
 
-*::selection{
+*::selection {
     background-color: rgba(0, 0, 0, .25);
 }
 
@@ -60,6 +60,10 @@ body {
 
 .material-symbols-outlined {
     user-select: none !important;
+}
+
+p {
+    all: unset;
 }
 
 .sidebar {
@@ -790,4 +794,78 @@ body {
     display: flex;
     z-index: 100;
     margin: 1rem;
+}
+
+/* userskillbar */
+
+.user-data-bar {
+    position: absolute;
+    z-index: 999;
+    top: 1rem;
+    left: 5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: space-evenly;
+    gap: .75rem;
+    color: white;
+}
+
+.user-wallet,
+.user-skill-container {
+    background-color: var(--red);
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 .5rem 0 var(--black);
+}
+
+.user-skill-container {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    row-gap: .25rem;
+    column-gap: .4rem;
+    grid-template-rows: 1rem auto;
+    grid-template-columns: 10rem auto;
+}
+
+.skill-bar {
+    width: 10rem;
+    height: 1rem;
+    grid-row: 1 / 2;
+    grid-column: 1 / 4;
+    background-image: linear-gradient(90deg, var(--light-green) 50%, var(--light-gray) 50%);
+    background-size: 200%;
+    background-position: 90%;
+    background-clip: border-box;
+    background-repeat: no-repeat;
+    border-radius: 1rem;
+}
+
+.skill-xp {
+    grid-row: 1 / 2;
+    grid-column: 4 / 5;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: .15rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: -.1rem;
+}
+
+.skill-level {
+    align-items: baseline;
+    font-size: 1rem;
+    grid-row: 2 / 3;
+    grid-column: 1 / 3;
+    font-weight: 400;
+}
+
+.user-wallet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .25rem;
 }
