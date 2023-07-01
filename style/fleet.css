@@ -26,7 +26,7 @@
     font-size: 1.2rem;
 }
 
-.vc-icon{
+.vc-icon {
     height: 4rem;
     width: 4rem;
     object-fit: cover;
@@ -58,4 +58,38 @@
 .vc-interact {
     grid-row: 5 / 6;
     grid-column: 1 / 6;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .5rem;
+    color: white;
+    padding: .75rem !important;
+    height: min-content;
+}
+
+.buy-vehicle-btn {
+    all: unset;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.25rem;
+    background-color: var(--green);
+    color: white;
+    padding: .75rem .85rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: background-color .25s ease-in-out;
+}
+
+.buy-vehicle-btn:hover{
+    background-color: var(--green-hover);
+}
+
+.buy-price-area {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .25rem;
 }

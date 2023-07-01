@@ -82,15 +82,17 @@ export const fleet = new class {
             <div class="vc-default-inventory" id="default-inventory-area-${vehicleCardUUID}"></div>
             <div class="vc-extra-inventory" id="extra-inventory-area-${vehicleCardUUID}"></div>
             <div class="vc-interact">
+            <button class="buy-vehicle-btn" id="buy-${vehicleCardUUID}">
+                <span class="material-symbols-outlined">
+                    shopping_cart
+                </span>                
                 <span class="buy-price-area">
                     <span id="price-${vehicleCardUUID}">Kaufpreis lädt</span>                        
                     <span class="material-symbols-outlined">
                         payments
                     </span>
                 </span>
-                <span class="material-symbols-outlined">
-                    shopping_cart
-                </span>                
+            </button>
             </div>
             `;
 
