@@ -13,7 +13,7 @@ class DATABASE {
             request.onsuccess = (e) => {
                 const db = e.target.result;
 
-                if (!db.objectStoreNames.contains(target.object_store)) {
+                if (db.objectStoreNames.contains(target.object_store)) {
                     const version = db.version;
                     db.close();
 
@@ -60,6 +60,10 @@ class DATABASE {
                         };
                     };
                 } else {
+
+                    const upgradeDb = e.target.result;
+                    upgradeDb.createObjectStore(target.object_store, { keyPath: target.keyPath });
+
                     const transaction = db.transaction([target.object_store], 'readwrite');
                     const objectStore = transaction.objectStore(target.object_store);
 

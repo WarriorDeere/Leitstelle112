@@ -1,3 +1,5 @@
+import { database } from "../database.js";
+
 export const fleet = new class {
     manage() {
 
@@ -96,25 +98,63 @@ export const fleet = new class {
             </div>
             `;
 
-            const vehiclePriceDOM = document.querySelector(`#price-${vehicleCardUUID}`);
-            if (vehicle.price.use_default_price) {
-                if (vehicle.category in categoryObject) {
-                    if (!isNaN(categoryObject[vehicle.category].default.price)) {
-                        vehiclePriceDOM.innerHTML = Number(categoryObject[vehicle.category].default.price);
+            async function getVehicleDefaultPrice() {
+                return new Promise((resolve, reject) => {
+                    if (vehicle.category in categoryObject) {
+                        const defaultPrice = Number(categoryObject[vehicle.category].default.price);
+                        if (isNaN(defaultPrice)) {
+                            reject(`Error: x001e02 - invalid value, 'price' must be a number`);
+                        }
+                        else {
+                            resolve(defaultPrice);
+                        }
                     }
                     else {
-                        vehiclePriceDOM.innerHTML = `Error: x001e02 - invalid value, '##shop_setup.json##.price' must be a number`;
-                        throw new Error(`Error: x001e02 - invalid value, '##shop_setup.json##.price' must be a number`);
+                        reject(`Error: x002e01 - not found, 'category' is undefined`);
                     }
-                }
-                else {
-                    vehiclePriceDOM.innerHTML = `Error: x002e01 - not found, '##shop_setup.json##.category' was not found`;
-                    throw new Error(`Error: x002e01 - not found, '##shop_setup.json##.category' was not found`);
-                }
+                })
+            }
+
+            const buyVehicleBtn = document.querySelector(`#buy-${vehicleCardUUID}`);
+            buyVehicleBtn.addEventListener('click', async () => {
+                const newVehicleUUID = crypto.randomUUID();
+                const currentDate = new Date();
+                database.post({
+                    'database': 'purchased_items',
+                    'version': 1,
+                    'object_store': 'vehicles',
+                    'keyPath': 'vehicle_id'
+                },
+                    {
+                        vehicle_id: newVehicleUUID,
+                        vehicle_type: vehicle.type,
+                        vehicle_category: vehicle.category,
+                        buy_price: await getVehicleDefaultPrice(),
+                        timestamp: currentDate.toISOString()
+                    }
+                ).then((r) => {
+                    if (r.code === 200) {
+                        localStorage.setItem('gameHasArea', true);
+                    }
+                }).catch((err) => {
+                    throw new Error(err)
+                });
+            });
+
+            const vehiclePriceDOM = document.querySelector(`#price-${vehicleCardUUID}`);
+            if (vehicle.price.use_default_price) {
+                await getVehicleDefaultPrice()
+                    .then((r) => {
+                        vehiclePriceDOM.innerHTML = r;
+                    })
+                    .catch((err) => {
+                        vehiclePriceDOM.innerHTML = err;
+                        throw new Error(err);
+                    })
             }
             else {
-                vehiclePriceDOM.innerHTML = `Error: x001e - invalid value, '##shop_items.json##.use_default_price' must be set to 'true'`;
-                throw new Error(`Error: x001e - invalid value, '##shop_items.json##.use_default_price' must be set to 'true'`);
+                vehiclePriceDOM.innerHTML = `Error: x001e01 - invalid value, 'use_default_price' must be set to 'true'`;
+                throw new Error(`Error: x001e01 - invalid value, 'use_default_price' must be set to 'true'`);
             }
 
             const crewCardContainer = document.querySelector(`#crew-member-area-${vehicleCardUUID}`);
