@@ -1,0 +1,17 @@
+._svg-symbol-container g {
+    transition: .25s ease-in-out;
+}
+
+._svg-symbol-container g:hover {
+    filter: drop-shadow(0 0 .05rem black);
+    cursor: pointer;
+}
+
+._svg-symbol-container text {
+    user-select: none;
+}
+
+._svg-crew-interface {
+    height: 100%;
+    width: 100%;
+}
