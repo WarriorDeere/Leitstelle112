@@ -3,4 +3,4 @@ config.env
 .flaskenv*
 !.env.project
 !.env.vault
-env.js
+env.ts

@@ -1,10 +1,4 @@
 {
     "version": "dev-0.0.1",
-    "release": "none",
-    "paths": {
-        "shop_items": "config/shop/shop_items.json",
-        "shop_setup": "config/shop/shop_setup.json",
-        "missions": "blueprints/missions.json",
-        "dummy": "blueprints/dummy.json"
-    }
+    "release": "none"
 }
