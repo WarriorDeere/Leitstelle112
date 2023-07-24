@@ -25,26 +25,6 @@ class DIALOG {
 
     async openMissionDialog() {
         try {
-            database.get({
-                'database': 'mission',
-                'version': 1,
-                'object_store': 'mission_active',
-                'keyPath': 'mission'
-            }).then((r: any) => {
-                r.data.forEach(async (mission: any) => {
-                    await this.setMissionContent(mission, mission.mission)
-                        .then((setContentStatus) => {
-                            return setContentStatus;
-                        })
-                        .catch((err) => {
-                            throw new Error(err);
-                        });
-                })
-            }).catch((err) => {
-                throw new Error(`${err.code} - ${err.text}`);
-            });
-
-            // create base ('bone')
             const dialogUUID = crypto.randomUUID();
 
             this.dialogBone.id = dialogUUID;

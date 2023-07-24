@@ -16,12 +16,29 @@
       "shell": {
         "all": false,
         "open": true
+      },
+      "fs": {
+        "all": true,
+        "scope": [
+          "$DOCUMENT/*",
+          "$DOCUMENT/Leitstelle112/*",
+          "$DOCUMENT/Leitstelle112/userdata/*",
+          "$DOCUMENT/Leitstelle112/default/*",
+          "$DOCUMENT/Leitstelle112/default/calls/*",
+          "$DOCUMENT/Leitstelle112/custom/*",
+          "$DOCUMENT/Arcavigi Interactive/*",
+          "$DOCUMENT/Arcavigi Interactive/Leitstelle112/*",
+          "$DOCUMENT/Arcavigi Interactive/Leitstelle112/config/*"
+        ]
+      },
+      "path": {
+        "all": true
       }
     },
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.tauri.dev",
+      "identifier": "Arcavigi Interactive",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -37,7 +54,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "Leitstelle112",
+        "title": "Leitstelle112-devbuild-v0.0.3",
         "width": 800,
         "height": 600
       }
