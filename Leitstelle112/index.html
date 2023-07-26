@@ -10,19 +10,12 @@
   <script defer type="module" src="./src/setup.ts"></script>
   <script defer type="module" src="./src/backend/filesetup.ts"></script>
   <script defer type="module" src="./src/backend/getData.ts"></script>
-
-  <script defer type="module" src="./src/frontend/script/main.ts"></script>
-
-  <script defer type="module" src="./src/frontend/script/gen/location.ts"></script>
-  <script defer type="module" src="./src/frontend/script/gen/onmap.ts"></script>
-
-  <script defer type="module" src="./src/frontend/script/ui/fleet.ts"></script>
-  <script defer type="module" src="./src/frontend/script/ui/district.ts"></script>
-  <script defer type="module" src="./src/frontend/script/ui/parts/gen-part.ts"></script>
-
+  <script defer type="module" src="./src/backend/backend_setup.ts"></script>
   <script defer type="module" src="./src/frontend/script/init/map.ts"></script>
 
   <script defer type="module" src="./src/frontend/env.ts"></script>
+
+  <script type="module" src="./src/init.tsx"></script>
 
   <!--lib-->
   <link rel='stylesheet' href='https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.23.0/maps/maps.css'>
@@ -33,85 +26,13 @@
   <script defer src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
 </head>
 
+
 <body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
 
-  <nav class="sidebar">
-    <div class="sidebar-item">
-      <button class="sidebar-btn" id="emergency">
-        <span class="material-symbols-outlined">
-          e911_emergency
-        </span>
-        <span class="tooltip">
-          Einsätze
-        </span>
-      </button>
-    </div>
-    <div class="sidebar-item">
-      <button class="sidebar-btn" id="radio">
-        <span class="material-symbols-outlined">
-          support_agent
-        </span>
-        <span class="tooltip">
-          Funk
-        </span>
-      </button>
-    </div>
-    <div class="sidebar-item">
-      <button class="sidebar-btn" id="building">
-        <span class="material-symbols-outlined">
-          apartment
-        </span>
-        <span class="tooltip">
-          Gebäude
-        </span>
-      </button>
-    </div>
-    <div class="sidebar-item">
-      <button class="sidebar-btn" id="new">
-        <span class="material-symbols-outlined">
-          hub
-        </span>
-        <span class="tooltip">
-          Verwaltung
-        </span>
-      </button>
-    </div>
-    <span class="placeholder"></span>
-    <div class="sidebar-item settings">
-      <button class="sidebar-btn" id="settings">
-        <span class="material-symbols-outlined">
-          settings
-        </span>
-        <span class="tooltip">
-          Einstellungen
-        </span>
-      </button>
-    </div>
-  </nav>
+  <span id="interface-layer"></span>
+  <dialog id="dialog-template"></dialog>
 
-  <section class="user-data-bar" id="ud-bar">
-    <div class="user-skill-container">
-      <span class="skill-bar progress"></span>
-      <span class="skill-xp">
-        295
-        <span class="material-symbols-outlined">
-          science
-        </span>
-      </span>
-      <span class="skill-level">Level 3 Einsatzleiter</span>
-    </div>
-    <div class="user-wallet">
-      35.045
-      <span class="material-symbols-outlined">
-        payments
-      </span>
-    </div>
-  </section>
-
-  <section class="dialog-container" id="dialog-container"></section>
-
+  <script defer type="module" src="./src/frontend/script/init/map.ts"></script>
   <section class="map-container" id="map"></section>
 
   <script src='https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.23.0/maps/maps-web.min.js'></script>
@@ -121,7 +42,7 @@
   <script type='module' src='src/assets/lib/formatters.js'></script>
   <script type='module' src='src/assets/lib/searchbox-enter-submit.js'></script>
   <script src='https://api.tomtom.com/maps-sdk-for-web/cdn/plugins/SearchBox/3.2.0//SearchBox-web.js'></script>
-  <link rel='stylesheet' href='/assets/lib/index.css' />
+  <link rel='stylesheet' href='src/assets/lib/index.css' />
 </body>
 
 </html>

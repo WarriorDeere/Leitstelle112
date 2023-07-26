@@ -11,4 +11,4 @@ export const map = tt.map({
 
 map.addControl(new tt.FullscreenControl())
     .addControl(new tt.NavigationControl())
-    .addControl(new tt.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: true }))
+    .addControl(new tt.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: true }));

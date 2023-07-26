@@ -1,5 +1,3 @@
-import { database } from "../database.ts";
-
 export const fleet = new class {
     manage() {
 
@@ -117,28 +115,28 @@ export const fleet = new class {
             const buyVehicleBtn = document.querySelector(`#buy-${vehicleCardUUID}`);
             if (buyVehicleBtn) {
                 buyVehicleBtn.addEventListener('click', async () => {
-                    const newVehicleUUID = crypto.randomUUID();
-                    const currentDate = new Date();
-                    database.post({
-                        'database': 'purchased_items',
-                        'version': 1,
-                        'object_store': 'vehicles',
-                        'keyPath': 'vehicle_id'
-                    },
-                        {
-                            vehicle_id: newVehicleUUID,
-                            vehicle_type: vehicle.type,
-                            vehicle_category: vehicle.category,
-                            buy_price: await getVehicleDefaultPrice(),
-                            timestamp: currentDate.toISOString()
-                        }
-                    ).then((r: any) => {
-                        if (r.code === 200) {
-                            localStorage.setItem('gameHasArea', 'true');
-                        }
-                    }).catch((err: string | undefined) => {
-                        throw new Error(err)
-                    });
+                    // const newVehicleUUID = crypto.randomUUID();
+                    // const currentDate = new Date();
+                    // database.post({
+                    //     'database': 'purchased_items',
+                    //     'version': 1,
+                    //     'object_store': 'vehicles',
+                    //     'keyPath': 'vehicle_id'
+                    // },
+                    //     {
+                    //         vehicle_id: newVehicleUUID,
+                    //         vehicle_type: vehicle.type,
+                    //         vehicle_category: vehicle.category,
+                    //         buy_price: await getVehicleDefaultPrice(),
+                    //         timestamp: currentDate.toISOString()
+                    //     }
+                    // ).then((r: any) => {
+                    //     if (r.code === 200) {
+                    //         localStorage.setItem('gameHasArea', 'true');
+                    //     }
+                    // }).catch((err: string | undefined) => {
+                    //     throw new Error(err)
+                    // });
                 });
             }
 

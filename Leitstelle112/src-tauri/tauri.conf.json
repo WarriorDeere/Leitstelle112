@@ -22,6 +22,7 @@
         "scope": [
           "$DOCUMENT/*",
           "$DOCUMENT/Leitstelle112/*",
+          "$DOCUMENT/Leitstelle112/logs/*",
           "$DOCUMENT/Leitstelle112/userdata/*",
           "$DOCUMENT/Leitstelle112/default/*",
           "$DOCUMENT/Leitstelle112/default/calls/*",
@@ -38,7 +39,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "Arcavigi Interactive",
+      "identifier": "ArcavigiInteractive",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",

@@ -1,8 +1,9 @@
+import tt_map from "@tomtom-international/web-sdk-maps";
 import { map } from "../init/map.ts";
 
 class onMap {
-    loadMarker(data) {
-        const missionMarker = new tt.Popup({ className: 'tt-popup', closeOnClick: false });
+    loadMarker(data: any) {
+        const missionMarker = new tt_map.Popup({ className: 'tt-popup', closeOnClick: false });
         missionMarker.setHTML(`
             <strong>${data.emergencyHeader.type}</strong>
             <br>
@@ -12,10 +13,6 @@ class onMap {
         `);
         missionMarker.setLngLat(data.emergencyHeader.lngLat);
         missionMarker.addTo(map);
-    }
-
-    getAreaFromClick(apiKey){
-        // MunicipalitySubdivision
     }
 }
 

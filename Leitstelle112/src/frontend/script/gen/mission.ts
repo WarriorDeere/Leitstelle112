@@ -33,12 +33,14 @@ export async function randomMission() {
     const missionObject = missionsFile.missions[i];
 
     return {
-        "emergencyHeader": {
+        "header": {
             "title": `${missionObject.type.cago} - ${missionObject.type.desc}`,
-            "type": missionObject.type.desc
+            "type": missionObject.type.desc,
+            "id": new String(crypto.randomUUID())
         },
-        "emergencyText": await randomCall(missionObject.type.file, missionObject.caller_hint),
-        "emergencyDummy": await randomName(),
-        "mission": new String(crypto.randomUUID())
+        "mission": {
+            "text": await randomCall(missionObject.type.file, missionObject.caller_hint),
+            "caller": await randomName()
+        }
     };
 }

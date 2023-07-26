@@ -3,11 +3,8 @@ import tt_map from "@tomtom-international/web-sdk-maps";
 import { map } from "../init/map.ts";
 
 import { TT_API_KEY } from "../../env.ts";
-import { database } from "../database.ts";
-import { District } from "./district.ts";
 import { fleet } from "./fleet.ts";
 import { gp } from "./parts/gen-part.ts";
-import { pp } from "./popup.ts";
 
 class DIALOG {
     dialogBone: HTMLDialogElement;
@@ -48,7 +45,6 @@ class DIALOG {
                     </header>
                 </article>
             `;
-
 
             this.dialogContainer.appendChild(this.dialogBone);
 
@@ -287,7 +283,7 @@ class DIALOG {
                 interfaceBone.id = 'foldable';
                 interfaceBone.classList.add(...['tt-overlay-panel', '-left-top', '-medium', 'ts-foldable']);
 
-                pp.toolHint('<h1> <span class="material-symbols-outlined">tips_and_updates</span> Tipp</h1><p>Einsatzgebiete sind feste Zonen, in welchen neue Einsätze auftreten. Du kannst Städte, Kommunen oder Stadtteile bzw. Bezirke wählen.</p><p>Entweder suchst du nach dem Namen in der Suchleiste oben oder du klickst mit der Maus auf die Karte um einen Stadtteil bzw. Bezirk zu markieren.</p><p>Jede Wache muss ein Einsatzgebiet zugewiesen haben.</p>', '#foldable');
+                // pp.toolHint('<h1> <span class="material-symbols-outlined">tips_and_updates</span> Tipp</h1><p>Einsatzgebiete sind feste Zonen, in welchen neue Einsätze auftreten. Du kannst Städte, Kommunen oder Stadtteile bzw. Bezirke wählen.</p><p>Entweder suchst du nach dem Namen in der Suchleiste oben oder du klickst mit der Maus auf die Karte um einen Stadtteil bzw. Bezirk zu markieren.</p><p>Jede Wache muss ein Einsatzgebiet zugewiesen haben.</p>', '#foldable');
 
                 map.on('click', (pnt: { lngLat: any; }) => {
 
@@ -378,7 +374,7 @@ class DIALOG {
                             .addTo(map)
                     }
                 });
-                District.create(options.apiKey);
+                // District.create(options.apiKey);
                 break;
 
             default:
@@ -513,41 +509,41 @@ class DIALOG {
         const thisDialog = document.getElementById(dialogUUID) as HTMLDialogElement;
         thisDialog.classList.add('dialog-mission-area');
 
-        await database.get({
-            'database': 'area',
-            'version': 1,
-            'object_store': 'area_building',
-            'keyPath': 'area'
-        }).then((r: any) => {
-            for (let i = 0; i < r.data.length; i++) {
-                gp.addContentToTable(
-                    `<tr class="list-item"><td class="list-title">${r.data[i].object_title}</td><td class="list-location">${r.data[i].area_title}</td><td class="list-ui"><span role="button" class="ui-item list-edit material-symbols-outlined" id="edit-${r.data[i].area}">tune</span><span role="button" class="ui-item list-del material-symbols-outlined" id="delete-${r.data[i].area}">delete</span></td></tr>`,
-                    `list-${dialogUUID}`,
-                    'list-item')
-                    .then(() => {
-                        const deleteItem = document.querySelector(`#delete-${r.data[i].area}`);
-                        if (deleteItem) {
-                            deleteItem.addEventListener('click', () => {
-                                thisDialog.close();
+        // await database.get({
+        //     'database': 'area',
+        //     'version': 1,
+        //     'object_store': 'area_building',
+        //     'keyPath': 'area'
+        // }).then((r: any) => {
+        //     for (let i = 0; i < r.data.length; i++) {
+        //         gp.addContentToTable(
+        //             `<tr class="list-item"><td class="list-title">${r.data[i].object_title}</td><td class="list-location">${r.data[i].area_title}</td><td class="list-ui"><span role="button" class="ui-item list-edit material-symbols-outlined" id="edit-${r.data[i].area}">tune</span><span role="button" class="ui-item list-del material-symbols-outlined" id="delete-${r.data[i].area}">delete</span></td></tr>`,
+        //             `list-${dialogUUID}`,
+        //             'list-item')
+        //             .then(() => {
+        //                 const deleteItem = document.querySelector(`#delete-${r.data[i].area}`);
+        //                 if (deleteItem) {
+        //                     deleteItem.addEventListener('click', () => {
+        //                         thisDialog.close();
 
-                            });
-                        }
+        //                     });
+        //                 }
 
-                        const editItem = document.querySelector(`#edit-${r.data[i].area}`);
-                        if (editItem) {
-                            editItem.addEventListener('click', () => {
-                                thisDialog.close();
-                                this.editMissionArea(`Einsatzgebiet ${r.data[i].area_title}`, r.data[i]);
-                            });
-                        }
-                    })
-                    .catch((err) => {
-                        throw new Error(err);
-                    });
-            }
-        }).catch((err) => {
-            throw new Error(err);
-        });
+        //                 const editItem = document.querySelector(`#edit-${r.data[i].area}`);
+        //                 if (editItem) {
+        //                     editItem.addEventListener('click', () => {
+        //                         thisDialog.close();
+        //                         this.editMissionArea(`Einsatzgebiet ${r.data[i].area_title}`, r.data[i]);
+        //                     });
+        //                 }
+        //             })
+        //             .catch((err) => {
+        //                 throw new Error(err);
+        //             });
+        //     }
+        // }).catch((err) => {
+        //     throw new Error(err);
+        // });
 
         thisDialog.showModal();
     }
