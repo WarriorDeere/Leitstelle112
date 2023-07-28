@@ -4,7 +4,6 @@ const session_id = crypto.randomUUID();
 
 if (!sessionStorage.getItem('session')) {
     sessionStorage.setItem('session', session_id);
-    console.log('test');
     logFile.setup(session_id)
         .catch((err) => {
             throw new Error(err);

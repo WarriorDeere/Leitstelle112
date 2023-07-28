@@ -1,17 +1,15 @@
 import { createRoot } from "react-dom/client";
 import { DialogBody, DialogHead, Navigation, Skillbar } from "../src/app.tsx";
-import { logFile } from "./backend/log.ts";
-import { session } from "./backend/backend_setup.ts";
 
-try {
-    const root = createRoot(document.querySelector('#interface-layer') as HTMLElement);
-    root.render(
-        <>
-            <Navigation />
-            <Skillbar />
-        </>
-    );
+const root = createRoot(document.querySelector('#interface-layer') as HTMLElement);
+root.render(
+    <>
+        <Navigation />
+        <Skillbar />
+    </>
+);
 
+export function emergencyDialog() {
     const dialogTemplate = document.querySelector('#dialog-template') as HTMLDialogElement;
     dialogTemplate.classList.add('dialog');
     const dialogRoot = createRoot(document.querySelector('#dialog-template') as HTMLDialogElement);
@@ -19,13 +17,10 @@ try {
 
     dialogRoot.render(
         <>
-            <DialogHead dialog={{ id: `${dialogId}`, title: 'Debug', dialogDOM: dialogTemplate }}></DialogHead>
-            <DialogBody dialog={{ id: `${dialogId}` }}></DialogBody>
+            <DialogHead dialog={{ id: `${dialogId}`, title: 'Einsätze', dialogDOM: dialogTemplate }} />
+            <DialogBody dialog={{ id: `${dialogId}`, type: 'mission' }} />
         </>
-    )
+    );
 
     dialogTemplate.showModal();
-} catch (err) {
-    logFile.write('ERROR', `Catch: ${err}`, session);
-    throw new Error(`Catch: ${err}`);
 }

@@ -4,7 +4,6 @@ import { map } from "../init/map.ts";
 
 import { TT_API_KEY } from "../../env.ts";
 import { fleet } from "./fleet.ts";
-import { gp } from "./parts/gen-part.ts";
 
 class DIALOG {
     dialogBone: HTMLDialogElement;
@@ -383,7 +382,7 @@ class DIALOG {
         }
     }
 
-    async editMissionArea(title: string, areaDetail: { object_title: any; area_title: any; status: any; }) {
+    async editMissionArea(areaDetail: { object_title: any; area_title: any; status: any; }) {
 
         const dialogUUID = crypto.randomUUID();
 
@@ -399,7 +398,7 @@ class DIALOG {
         this.dialogBone.appendChild(dialogContentContainer);
         this.dialogContainer.appendChild(this.dialogBone);
 
-        gp.dialogHead(dialogUUID, title, `#edit-mission-area-${dialogUUID}`);
+        // gp.dialogHead(dialogUUID, title, `#edit-mission-area-${dialogUUID}`);
 
         const dialogContent = document.querySelector(`#edit-mission-area-${dialogUUID}`);
         const dialogContentBone = document.createElement('section');
@@ -481,7 +480,7 @@ class DIALOG {
         dialogContentContainer.id = `content-${dialogUUID}`;
         const dialogContent = document.querySelector(`#content-${dialogUUID}`);
 
-        gp.dialogHead(dialogUUID, 'Einsatzgebiete', `#${dialogContentContainer.id}`);
+        // gp.dialogHead(dialogUUID, 'Einsatzgebiete', `#${dialogContentContainer.id}`);
         const dialogContentBone = document.createElement('section');
         dialogContentBone.innerHTML = `
             <div class="manage-desc">

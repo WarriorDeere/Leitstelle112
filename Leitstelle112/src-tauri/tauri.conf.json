@@ -24,12 +24,10 @@
           "$DOCUMENT/Leitstelle112/*",
           "$DOCUMENT/Leitstelle112/logs/*",
           "$DOCUMENT/Leitstelle112/userdata/*",
+          "$DOCUMENT/Leitstelle112/userdata/profile/*",
           "$DOCUMENT/Leitstelle112/default/*",
           "$DOCUMENT/Leitstelle112/default/calls/*",
-          "$DOCUMENT/Leitstelle112/custom/*",
-          "$DOCUMENT/Arcavigi Interactive/*",
-          "$DOCUMENT/Arcavigi Interactive/Leitstelle112/*",
-          "$DOCUMENT/Arcavigi Interactive/Leitstelle112/config/*"
+          "$DOCUMENT/Leitstelle112/custom/*"
         ]
       },
       "path": {
