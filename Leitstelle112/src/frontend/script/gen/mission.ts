@@ -40,13 +40,25 @@ async function randomCall(fileName: string, textHint: string | number) {
     })
 }
 
+type randomMissionPromise = {
+    "header": {
+        "title": string,
+        "type": string,
+        "id": string
+    },
+    "mission": {
+        "text": string,
+        "caller": string
+    }
+}
+
 export async function randomMission() {
-    return new Promise<any>(async (resolve, reject) => {
+    return new Promise<randomMissionPromise>(async (resolve, reject) => {
         try {
             const missionsFile = await fetchFile('Leitstelle112/default', 'missions');
             const i = Math.floor(Math.random() * missionsFile.missions.length);
             const missionObject = missionsFile.missions[i];
-            const mission_uuid = new String(crypto.randomUUID());
+            const mission_uuid = crypto.randomUUID();
 
             resolve({
                 "header": {

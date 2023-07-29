@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { randomMission } from "./frontend/script/gen/mission";
 import { emergencyDialog } from "./init";
 import "./style.css";
@@ -115,80 +116,66 @@ export function DialogBody({ dialog }: DialogBodyType) {
     }
 }
 
-type misionResponse =
-    {
-        "success": true
-        "data": {
-            "text": string,
-            "title": string,
-            "type": string
-        }
-    } | {
-        "success": false
-        "data": {
-            "cause": string
-        }
+type allMissionsReturn = {
+    "header": {
+        "title": string,
+        "type": string,
+        "id": string
+    },
+    "mission": {
+        "text": string,
+        "caller": string
     }
+}
 
-const missionDialogContent = await randomMission()
-    .then(
-        (r): misionResponse => {
-            const rawText = new String(r.mission.text)
-            const callerName: any = r.mission.caller
-            const finalText = rawText.replace('#NAME#', callerName).replace('#LOCATION#', '~~~');
-            return {
-                "success": true,
-                "data": {
-                    "text": finalText,
-                    "title": r.header.title,
-                    "type": r.header.type
-                }
-            };
-        }
-    )
-    .catch((err): misionResponse => {
-        return {
-            "success": false,
-            "data": {
-                "cause": err
-            }
-        }
-    });
+async function pushMissions(): Promise<allMissionsReturn[]> {
+    const allMissions = [];
+    allMissions.push(await randomMission());
+    return allMissions;
+}
+
+const openMissions = await pushMissions();
 
 function MissionItem() {
-    if (missionDialogContent.success) {
-        return (
-            <>
+    const missionItems = openMissions
+        .map(mission =>
+            <Fragment key={mission.header.id}>
                 <div className="mission-head">
                     <div className="mission-icon">
                         {/* <img src="https://cdn-icons-png.flaticon.com/512/1453/1453025.png"> */}
                     </div>
-                    <div className="mission-title" id="mission-title-${identifer}">{missionDialogContent.data.title}</div>
-                    <div className="mission-type" id="mission-type-${identifer}">{missionDialogContent.data.type}</div>
-                    <div className="mission-location" id="mission-location-${identifer}">Adresse lädt...</div>
+                    <div className="mission-title" id={`mission-title-${mission.header.id}`}>{mission.header.title}</div>
+                    <div className="mission-type" id={`mission-type-${mission.header.id}`}>{mission.header.type}</div>
+                    <div className="mission-location" id={`mission-location-${mission.header.id}`}>Adresse lädt...</div>
                 </div>
                 <div className="mission-information">
                     <div className="mission-desc">
-                        <p id="mission-text-${identifer}">{missionDialogContent.data.text}</p>
+                        <p id={`mission-text-${mission.header.id}`}>{mission.mission.text}</p>
                     </div>
                 </div>
                 <div className="mission-interface">
                     <button className="mission-cancel">Abbrechen</button>
                     <button className="mission-respond">Annehmen</button>
                 </div>
-            </>
-        );
-    } else if (missionDialogContent.success === false) {
-        return (
-            <div className="error-msg">
-                <h1>oopsie, doopise - an error occured.</h1>
-                <code className="error-field">{missionDialogContent.data.cause}</code>
-                <i>
-                    Please relaunch the App. If the error persist <a title="Opens: https://github.com/WarriorDeere/Leitstelle112/issues/new in your browser" href="https://github.com/WarriorDeere/Leitstelle112/issues/new" target="_blank">submit a bug report</a> on GitHub.
-                </i>
-            </div>
+            </Fragment>
         )
-    }
+    return (
+        <>
+            {missionItems}
+        </>
+    );
+    // if () {
+    // } else if (missionDialogContent.success === false) {
+    //     return (
+    //         <div className="error-msg">
+    //             <h1>oopsie, doopise - an error occured.</h1>
+    //             <code className="error-field">{missionDialogContent.data.cause}</code>
+    //             <i>
+    //                 Please relaunch the App. If the error persist <a title="Opens: https://github.com/WarriorDeere/Leitstelle112/issues/new in your browser" href="https://github.com/WarriorDeere/Leitstelle112/issues/new" target="_blank">submit a bug report</a> on GitHub.
+    //             </i>
+    //         </div>
+    //     )
+    // }
 }
 
 function DebugItem() {

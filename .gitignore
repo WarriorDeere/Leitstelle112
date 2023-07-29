@@ -4,3 +4,5 @@ config.env
 !.env.project
 !.env.vault
 env.ts
+release/Leitstelle112_0.1.1_setup.exe
+release/Leitstelle112_0.1.1_setup.msi
