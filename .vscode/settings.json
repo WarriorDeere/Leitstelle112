@@ -1,0 +1,11 @@
+{
+    "sqltools.useNodeRuntime": true,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "C:\\Users\\Anwender\\AppData\\Roaming\\ArcavigiInteractive\\mission.db",
+            "name": "Leitstelle112/mission"
+        }
+    ]
+}

@@ -52,6 +52,9 @@ type randomMissionPromise = {
     }
 }
 
+let lastCalled = 0;
+const cooldown = 1000;
+
 export async function randomMission() {
     return new Promise<randomMissionPromise>(async (resolve, reject) => {
         try {
@@ -60,19 +63,29 @@ export async function randomMission() {
             const missionObject = missionsFile.missions[i];
             const mission_uuid = crypto.randomUUID();
 
-            resolve({
-                "header": {
-                    "title": `${missionObject.type.cago} - ${missionObject.type.desc}`,
-                    "type": missionObject.type.desc,
-                    "id": mission_uuid
-                },
-                "mission": {
-                    "text": await randomCall(missionObject.type.file, missionObject.caller_hint),
-                    "caller": await randomName()
-                }
-            })
+            const currentTime = Date.now();
 
-            logFile.write('INFO', `new mission: ${mission_uuid}: (category: ${missionObject.type.cago} | description: ${missionObject.type.desc})`, session);
+            if (currentTime - lastCalled >= cooldown) {
+                lastCalled = currentTime;
+                resolve({
+                    "header": {
+                        "title": `${missionObject.type.cago} - ${missionObject.type.desc}`,
+                        "type": missionObject.type.desc,
+                        "id": mission_uuid
+                    },
+                    "mission": {
+                        "text": await randomCall(missionObject.type.file, missionObject.caller_hint),
+                        "caller": await randomName()
+                    }
+                })
+                logFile.write('INFO', `new mission: ${mission_uuid}: (category: ${missionObject.type.cago} | description: ${missionObject.type.desc})`, session);
+            }
+            else {
+                const remainingTime = Math.ceil((lastCalled + cooldown - currentTime) / 1000)
+                reject(`randomMission() is on cooldown! Try again in ${remainingTime}s`)
+                logFile.write('WARNING', `randomMission() is on cooldown! Try again in ${remainingTime}s`, session);
+            }
+
         } catch (err) {
             logFile.write('ERROR', `mission generation failed: ${err}`, session);
             reject(err)
