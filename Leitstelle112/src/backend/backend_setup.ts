@@ -1,6 +1,20 @@
-import { randomMission } from "../frontend/script/gen/mission";
-import { databaseAPI } from "./db";
+// import { randomMission } from "../frontend/script/gen/mission";
+// import { databaseAPI } from "./db";
 import { logFile } from "./log";
+import { WebviewWindow } from '@tauri-apps/api/window';
+
+const mainWindow = WebviewWindow.getByLabel('app-window')!;
+
+await mainWindow.isMaximized()
+    .then((r) => {
+        if (!r) {
+            mainWindow.maximize();
+        }
+    });
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await mainWindow.show();
+});
 
 const session_id = crypto.randomUUID();
 
@@ -18,18 +32,18 @@ if (!sessionStorage.getItem('session')) {
 
 export const session = sessionStorage.getItem('session')!;
 
-async function newMissionToDb() {
-    const missionData = await randomMission();
-    databaseAPI.insert({
-        database: {
-            name: "mission"
-        },
-        table: {
-            name: "active_missions",
-            columns: "'mission_uuid', 'mission_title', 'mission_type', 'mission_text', 'mission_caller'",
-            values: `'${missionData.header.id}', '${missionData.header.title}', '${missionData.header.type}', '${missionData.mission.text}', '${missionData.mission.caller}'`
-        }
-    })
-}
+// async function newMissionToDb() {
+//     const missionData = await randomMission();
+//     databaseAPI.insert({
+//         database: {
+//             name: "mission"
+//         },
+//         table: {
+//             name: "active_missions",
+//             columns: "'mission_uuid', 'mission_title', 'mission_type', 'mission_text', 'mission_caller'",
+//             values: `'${missionData.header.id}', '${missionData.header.title}', '${missionData.header.type}', '${missionData.mission.text}', '${missionData.mission.caller}'`
+//         }
+//     })
+// }
 
 // newMissionToDb();

@@ -1,0 +1,124 @@
+* {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    user-select: none;
+}
+
+body {
+    padding: 5rem;
+    /* background-color: rgb(5, 0, 15); */
+    background-color: black;
+}
+
+body::after {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 255, 0.5), transparent 75%);
+    filter: blur(15px);
+    top: 0;
+    left: 25%;
+    z-index: -1;
+    animation: light .25s infinite both;
+    animation-delay: .1s;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-image: radial-gradient(circle at 50% 50%, blue, transparent 75%);
+    filter: blur(15px);
+    top: 0;
+    right: 25%;
+    z-index: -1;
+    animation: light .25s infinite both;
+}
+
+@keyframes light {
+    0%{
+        background-image: radial-gradient(circle at 50% 50%, blue, transparent 75%);
+        filter: blur(15px);
+    }
+    25%{
+        background-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 255, 0.75), transparent 50%);
+        filter: blur(25px);    
+    }
+    50%{
+        background-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 255, 0.25), transparent 50%);
+        filter: blur(50px);    
+    }
+    55%{
+        background-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 255, 0.5), transparent 50%);
+        filter: blur(5px);    
+    }
+    75%{
+        background-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 255, 0.25), transparent 50%);
+        filter: blur(50px);    
+    }
+    100%{
+        background-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 255), transparent 50%);
+        filter: blur(15px);    
+    }
+}
+
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: black;
+    box-shadow: 0 0 2rem .15rem rgba(0, 0, 0, .6);
+}
+
+.titlebar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.titlebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-image: radial-gradient(circle at 0 0, red, transparent 50%);
+    filter: blur(10px);
+}
+
+.titlebar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-image: radial-gradient(circle at 100% 0, rgba(50, 50, 50, 0.5), transparent 35%);
+}
+
+.titlebar-button {
+    cursor: pointer;
+    padding: .5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color .25s ease-in-out;
+    color: white;
+    z-index: 2;
+}
+
+#titlebar-minimize:hover {
+    backdrop-filter: blur(5px);
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+#titlebar-close:hover {
+    backdrop-filter: blur(5px);
+    background-color: rgba(255, 0, 0, 0.75);
+}

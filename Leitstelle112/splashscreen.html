@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./src/splashscreen.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+</head>
+
+<body>
+    <nav>
+        <div class="titlebar" data-tauri-drag-region>
+            <div class="titlebar-button" id="titlebar-minimize">
+                <span class="material-symbols-outlined">
+                    minimize
+                </span>
+            </div>
+            <div class="titlebar-button" id="titlebar-close">
+                <span class="material-symbols-outlined">
+                    close
+                </span>
+            </div>
+        </div>
+    </nav>
+</body>
+
+</html>
+
+<!-- {
+    "width": 800,
+    "height": 800,
+    "decorations": false,
+    "focus": true,
+    "title": "",
+    "url": "splashscreen.html",
+    "label": "splashscreen",
+    "center": true,
+    "resizable": false
+  } -->
+
+<script defer type="module">
+    import { appWindow } from '@tauri-apps/api/window'
+    appWindow.requestUserAttention('Critical')
+    document
+        .getElementById('titlebar-minimize')
+        .addEventListener('click', () => appWindow.minimize())
+    document
+        .getElementById('titlebar-close')
+        .addEventListener('click', () => appWindow.close())
+</script>
