@@ -1,10 +1,10 @@
-import { Fragment, useEffect, useRef, useCallback } from 'react';
-import { randomMission } from "./frontend/script/gen/mission";
+import { useEffect, useRef, useCallback } from 'react';
 import { emergencyDialog } from "./init";
 import "./style.css";
 import { cstData } from './backend/dataSetup';
 import { logFile } from './backend/log';
 import { session } from './backend/backend_setup';
+import { databaseAPI } from './backend/db';
 
 type defaultItemsData = {
     data: renderDialogFalse | renderDialogTrue
@@ -23,8 +23,6 @@ type renderDialogTrue = {
 
 export function DefaultItems({ data }: defaultItemsData) {
     if (data.validation_dialog == true) {
-        // const dialog = document.querySelector('#validation-dialog') as HTMLDialogElement;
-        // dialog.showModal();
         return (
             <>
                 <span id="interface-layer">
@@ -60,6 +58,7 @@ export function KeyValidationDialog({ data }: KeyValidationData) {
     const handleCloseModal = useCallback(() => {
         if (dialogRef.current) {
             dialogRef.current.close();
+            location.reload()
         }
     }, []);
 
@@ -98,8 +97,6 @@ export function KeyValidationDialog({ data }: KeyValidationData) {
                     const saveToFile = document.querySelector('#save-file') as HTMLInputElement;
                     const key = document.querySelector('#key-input') as HTMLInputElement;
                     if (saveToFile?.checked) {
-                        console.log(key.value);
-
                         await cstData.writeData([{
                             "file_name": "api.key",
                             "file_path": "Leitstelle112/userdata/",
@@ -110,7 +107,7 @@ export function KeyValidationDialog({ data }: KeyValidationData) {
                                 const obfuscatedKey = key.value.substring(0, 5) + obfSymbol.repeat(key.value.length - 5);
                                 logFile.write('INFO', `New API-Key registered: ${obfuscatedKey}`, session)
                                 console.log(`New API-Key registered: ${obfuscatedKey}`);
-                                handleCloseModal(); // Schließe das Modal nach erfolgreichem Schreibvorgang
+                                handleCloseModal();
                             })
                             .catch((err) => {
                                 logFile.write('ERROR', err, session)
@@ -119,7 +116,7 @@ export function KeyValidationDialog({ data }: KeyValidationData) {
                     }
                     else {
                         sessionStorage.setItem('api_key', key.value);
-                        handleCloseModal(); // Schließe das Modal
+                        handleCloseModal();
                     }
                 }}>ok</button>
             </div>
@@ -223,9 +220,7 @@ export function DialogBody({ dialog }: DialogBodyType) {
         case "mission":
             return (
                 <article className="dialog-item" id={dialogContentId}>
-                    <div className="mission-container" id="mission-container-">
-                        <MissionItem />
-                    </div>
+                    <MissionItem />
                 </article>
             );
 
@@ -241,65 +236,66 @@ export function DialogBody({ dialog }: DialogBodyType) {
 }
 
 type allMissionsReturn = {
-    "header": {
-        "title": string,
-        "type": string,
-        "id": string
-    },
-    "mission": {
-        "text": string,
-        "caller": string
-    }
+    mission_caller: string
+    mission_text: string
+    mission_title: string
+    mission_type: string
+    mission_uuid: string
 }
 
 async function pushMissions(): Promise<allMissionsReturn[]> {
-    const allMissions = [];
-    allMissions.push(await randomMission());
-    return allMissions;
+    const allOpenMissions = await databaseAPI.select({
+        database: {
+            name: "mission"
+        },
+        table: {
+            name: "active_missions",
+            options: "all"
+        }
+    })
+        .catch((err) => {
+            logFile.write('ERROR', err, session);
+            throw new Error(err)
+        });
+
+    console.log(allOpenMissions);
+
+    return allOpenMissions;
 }
 
 const openMissions = await pushMissions();
 
 function MissionItem() {
+    openMissions.forEach(mission => {
+        console.log(mission);
+    })
     const missionItems = openMissions
         .map(mission =>
-            <Fragment key={mission.header.id}>
+            <div className="mission-container" id={`mission-container-${mission.mission_uuid}`} key={mission.mission_uuid}>
                 <div className="mission-head">
                     <div className="mission-icon">
                         {/* <img src="https://cdn-icons-png.flaticon.com/512/1453/1453025.png"> */}
                     </div>
-                    <div className="mission-title" id={`mission-title-${mission.header.id}`}>{mission.header.title}</div>
-                    <div className="mission-type" id={`mission-type-${mission.header.id}`}>{mission.header.type}</div>
-                    <div className="mission-location" id={`mission-location-${mission.header.id}`}>Adresse lädt...</div>
+                    <div className="mission-title" id={`mission-title-${mission.mission_uuid}`}>{mission.mission_title}</div>
+                    <div className="mission-type" id={`mission-type-${mission.mission_uuid}`}>{mission.mission_type}</div>
+                    <div className="mission-location" id={`mission-location-${mission.mission_uuid}`}>Adresse lädt...</div>
                 </div>
                 <div className="mission-information">
                     <div className="mission-desc">
-                        <p id={`mission-text-${mission.header.id}`}>{mission.mission.text}</p>
+                        <p id={`mission-text-${mission.mission_uuid}`}>{mission.mission_text}</p>
                     </div>
                 </div>
                 <div className="mission-interface">
                     <button className="mission-cancel">Abbrechen</button>
                     <button className="mission-respond">Annehmen</button>
                 </div>
-            </Fragment>
+            </div>
         )
     return (
         <>
             {missionItems}
         </>
     );
-    // if () {
-    // } else if (missionDialogContent.success === false) {
-    //     return (
-    //         <div className="error-msg">
-    //             <h1>oopsie, doopise - an error occured.</h1>
-    //             <code className="error-field">{missionDialogContent.data.cause}</code>
-    //             <i>
-    //                 Please relaunch the App. If the error persist <a title="Opens: https://github.com/WarriorDeere/Leitstelle112/issues/new in your browser" href="https://github.com/WarriorDeere/Leitstelle112/issues/new" target="_blank">submit a bug report</a> on GitHub.
-    //             </i>
-    //         </div>
-    //     )
-    // }
 }
 
 function DebugItem() {

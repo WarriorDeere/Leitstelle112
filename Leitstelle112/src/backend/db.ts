@@ -144,12 +144,12 @@ export const databaseAPI = new class interactWithDB {
 //     }
 // })
 
-await databaseAPI.select({
-    database: {
-        name: "mission"
-    },
-    table: {
-        name: "active_missions",
-        options: "all"
-    }
-})
+// await databaseAPI.select({
+//     database: {
+//         name: "mission"
+//     },
+//     table: {
+//         name: "active_missions",
+//         options: "all"
+//     }
+// })
