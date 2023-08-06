@@ -4,7 +4,7 @@ import { logFile } from "../../../backend/log";
 
 function fetchFile(filePath: string, fileName: string) {
     return new Promise<any>(async (resolve, reject) => {
-        await fetchFrom.file(filePath, fileName)
+        await fetchFrom.file(filePath, `${fileName}.json`)
             .then((fileContent: any) => {
                 resolve(JSON.parse(fileContent));
             })

@@ -1,9 +1,8 @@
 import tt from "@tomtom-international/web-sdk-services";
 import tt_map from "@tomtom-international/web-sdk-maps";
 import { map } from "../init/map.ts";
-
-import { TT_API_KEY } from "../../env.ts";
 import { fleet } from "./fleet.ts";
+import { TT_API_KEY } from "../../../setup.ts";
 
 class DIALOG {
     dialogBone: HTMLDialogElement;

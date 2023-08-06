@@ -8,13 +8,10 @@
 
   <script defer type="module" src="./src/frontend/script/gen/mission.ts"></script>
   <script defer type="module" src="./src/setup.ts"></script>
-  <script defer type="module" src="./src/backend/filesetup.ts"></script>
   <script defer type="module" src="./src/backend/getData.ts"></script>
   <script defer type="module" src="./src/backend/backend_setup.ts"></script>
   <script defer type="module" src="./src/backend/db.ts"></script>
   <script defer type="module" src="./src/frontend/script/init/map.ts"></script>
-
-  <script defer type="module" src="./src/frontend/env.ts"></script>
 
   <script type="module" src="./src/init.tsx"></script>
 
@@ -29,13 +26,8 @@
 
 
 <body>
-
-  <span id="interface-layer"></span>
-  <dialog id="dialog-template"></dialog>
-
-  <script defer type="module" src="./src/frontend/script/init/map.ts"></script>
-  <section class="map-container" id="map"></section>
-
+  <section id="react-ui"></section>
+  <section id="map" class="map-container"></section>
   <script src='https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.23.0/maps/maps-web.min.js'></script>
   <script src='https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.23.0/services/services-web.min.js'></script>
   <script type='module' src='src/assets/lib/foldable.js'></script>

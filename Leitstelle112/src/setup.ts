@@ -1,6 +1,7 @@
-import { data } from "./backend/filesetup";
+import { cstData } from "./backend/dataSetup";
+import { fetchFrom } from "./backend/getData";
 
-data.pathSetup([
+cstData.writePath([
     "Leitstelle112",
     "Leitstelle112/logs",
     "Leitstelle112/userdata",
@@ -9,21 +10,21 @@ data.pathSetup([
     "Leitstelle112/default/calls"
 ])
 
-data.fileSetup([
+cstData.writeFile([
     {
         "file_name": "config.json",
         "file_path": "Leitstelle112/userdata/",
         "file_content": `{"isFirstStartAfterInstall": true,"isFirstStartAfterUpdate": true,"update": {"current_version": "undefined","version_before": "undefined","version_after": "undefined"}}`
     },
     {
+        "file_name": "api.key",
+        "file_path": "Leitstelle112/userdata/",
+        "file_content": ""
+    },
+    {
         "file_name": "app.json",
         "file_path": "Leitstelle112/userdata/",
         "file_content": `{"version": "dev-0.0.3","release": "none"}`
-    },
-    {
-        "file_name": "api.key",
-        "file_path": "Leitstelle112/userdata/",
-        "file_content": ''
     },
     {
         "file_name": "profile.json",
@@ -66,3 +67,8 @@ data.fileSetup([
         "file_content": '{"start":["Guten Tag, mein Name ist #NAME# und ich bin hier an der #LOCATION#.","Hallo, ich brauche hier wirklich dringend Hilfe. Ich heiße #NAME#.","Moin, #NAME# hier. Ich möchte einen Notfall melden.","#NAME#, kommen Sie schnell!","Ich brauche sofort Hilfe. #NAME# ist mein Name.","Ich rufe wegen einer Notlage an. Mein Name ist #NAME#.","Hier ist #NAME# und ich brauche Ihre Hilfe.","Ich befinde mich an der Adresse #LOCATION# und brauche dringend Hilfe. Meine Name ist #NAME#.","Hier braucht jemand ihre Hilfe.","#NAME# am Apparat. Gut, dass Sie endlich rangehen! Ich habe es schon zich mal versucht. Es ist nämlich wirklich dringend!"],"end":["Vielen Dank für Ihre Hilfe!","Ich danke Ihnen für Ihre Unterstützung!","Nochmals vielen Dank!","Ich bin sehr dankbar für Ihre Hilfe!","Mensch bin ich erleichtert, dass jetzt endlich jemand kommt!","Danke, für ihre Hilfe.","Ich warte dann hier auf die Kollegen.","Danke für Ihre Zeit und Unterstützung!","Ich bin froh, dass ich mich auf Sie verlassen konnte.","Gut, dann lege ich jetzt auf und warte auf die Rettungskräfte.","Vielen Dank.","Bitte beeilen Sie sich!","Vielen Dank für Ihre schnelle Hilfe!","Bitte bringen Sie genug Einsatzkräfte mit!","Ich bleibe am Telefon, falls Sie weitere Fragen haben!","Ich habe alle notwendigen Informationen gegeben, bitte helfen Sie schnell!","Bitte kommen Sie so schnell wie möglich!","Ich danke Ihnen für Ihre Unterstützung!","Ich warte hier auf die Feuerwehr / den Rettungsdienst!","Bitte rufen Sie mich zurück, falls es Neuigkeiten gibt!","Ich stehe für weitere Informationen zur Verfügung."]}'
     }
 ])
+
+export const TT_API_KEY = await fetchFrom.file('Leitstelle112/userdata', 'api.key')
+    .then((r) => {
+        return r;
+    });

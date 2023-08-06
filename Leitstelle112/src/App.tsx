@@ -1,7 +1,131 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect, useRef, useCallback } from 'react';
 import { randomMission } from "./frontend/script/gen/mission";
 import { emergencyDialog } from "./init";
 import "./style.css";
+import { cstData } from './backend/dataSetup';
+import { logFile } from './backend/log';
+import { session } from './backend/backend_setup';
+
+type defaultItemsData = {
+    data: renderDialogFalse | renderDialogTrue
+};
+
+type renderDialogFalse = {
+    validation_dialog: false
+}
+
+type renderDialogTrue = {
+    validation_dialog: true
+    dialog_data: {
+        class: string
+    }
+}
+
+export function DefaultItems({ data }: defaultItemsData) {
+    if (data.validation_dialog == true) {
+        // const dialog = document.querySelector('#validation-dialog') as HTMLDialogElement;
+        // dialog.showModal();
+        return (
+            <>
+                <span id="interface-layer">
+                    <Navigation />
+                    <Skillbar />
+                </span>
+                <dialog id="dialog-template"></dialog>
+                <KeyValidationDialog data={{ class: data.dialog_data.class }} />
+            </>
+        )
+    } else {
+        return (
+            <>
+                <span id="interface-layer">
+                    <Navigation />
+                    <Skillbar />
+                </span>
+                <dialog id="dialog-template"></dialog>
+            </>
+        );
+    }
+}
+
+type KeyValidationData = {
+    data: {
+        class: string;
+    };
+};
+
+export function KeyValidationDialog({ data }: KeyValidationData) {
+    const dialogRef = useRef<HTMLDialogElement | null>(null);
+
+    const handleCloseModal = useCallback(() => {
+        if (dialogRef.current) {
+            dialogRef.current.close();
+        }
+    }, []);
+
+    useEffect(() => {
+        if (dialogRef.current) {
+            dialogRef.current.showModal();
+        }
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                handleCloseModal();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [handleCloseModal]);
+
+    return (
+        <dialog ref={dialogRef} className={data.class} id='validation-dialog'>
+            <div className="desc">
+                <h2>API-Key</h2>
+                <p>Bitte gib deinen Key ein, um fortzufahren</p>
+            </div>
+            <div className="interface">
+                <div className="input-container">
+                    <input id="key-input" type='text' placeholder='Key' />
+                    <input id='save-file' type='checkbox' name='save' />
+                    <label htmlFor="save">Merken</label>
+                </div>
+                <button className='enter-key' onClick={async () => {
+                    const saveToFile = document.querySelector('#save-file') as HTMLInputElement;
+                    const key = document.querySelector('#key-input') as HTMLInputElement;
+                    if (saveToFile?.checked) {
+                        console.log(key.value);
+
+                        await cstData.writeData([{
+                            "file_name": "api.key",
+                            "file_path": "Leitstelle112/userdata/",
+                            "file_content": key.value
+                        }])
+                            .then(() => {
+                                const obfSymbol = '*';
+                                const obfuscatedKey = key.value.substring(0, 5) + obfSymbol.repeat(key.value.length - 5);
+                                logFile.write('INFO', `New API-Key registered: ${obfuscatedKey}`, session)
+                                console.log(`New API-Key registered: ${obfuscatedKey}`);
+                                handleCloseModal(); // Schließe das Modal nach erfolgreichem Schreibvorgang
+                            })
+                            .catch((err) => {
+                                logFile.write('ERROR', err, session)
+                                throw new Error(err);
+                            })
+                    }
+                    else {
+                        sessionStorage.setItem('api_key', key.value);
+                        handleCloseModal(); // Schließe das Modal
+                    }
+                }}>ok</button>
+            </div>
+        </dialog>
+    );
+}
 
 export function Skillbar() {
     return (

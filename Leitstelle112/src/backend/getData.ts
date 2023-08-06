@@ -4,17 +4,17 @@ import { session } from './backend_setup';
 
 export const fetchFrom = new class fetchData {
     file(filePath: string, fileName: string) {
-        return new Promise(async (resolve, reject) => {
-            const doesFileExist = await exists(`${filePath}/${fileName}.json`, { dir: BaseDirectory.Document })
+        return new Promise<string>(async (resolve, reject) => {
+            const doesFileExist = await exists(`${filePath}/${fileName}`, { dir: BaseDirectory.Document })
                 .catch((err) => {
                     reject(err);
                     throw new Error(err);
                 });
 
             if (doesFileExist) {
-                await readTextFile(`${filePath}/${fileName}.json`, { dir: BaseDirectory.Document })
+                await readTextFile(`${filePath}/${fileName}`, { dir: BaseDirectory.Document })
                     .then((r: any) => {
-                        // logFile.write('INFO', `fetched file: ${filePath}/${fileName}.json [success]`, session);
+                        logFile.write('INFO', `fetched file: ${filePath}/${fileName} [success]`, session);
                         resolve(r);
                     })
                     .catch((err) => {
@@ -24,9 +24,9 @@ export const fetchFrom = new class fetchData {
                     });
             }
             else {
-                logFile.write('ERROR', `File ${filePath}/${fileName}.json missing.`, session);
-                reject(`File ${filePath}/${fileName}.json missing.`);
-                throw new Error(`File ${filePath}/${fileName}.json missing.`);
+                logFile.write('ERROR', `File ${filePath}/${fileName} missing.`, session);
+                reject(`File ${filePath}/${fileName} missing.`);
+                throw new Error(`File ${filePath}/${fileName} missing.`);
             }
         });
     }
