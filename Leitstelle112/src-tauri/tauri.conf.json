@@ -7,8 +7,8 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "Leitstelle112",
-    "version": "0.0.0"
+    "productName": "leitstelle112",
+    "version": "0.0.4"
   },
   "tauri": {
     "allowlist": {
@@ -65,7 +65,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "Leitstelle112-devbuild-v0.0.3",
+        "title": "Leitstelle112-devbuild-v0.0.4",
         "width": 800,
         "height": 600,
         "visible": true,

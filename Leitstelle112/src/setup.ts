@@ -1,5 +1,8 @@
+import { session } from "./backend/backend_setup";
 import { cstData } from "./backend/dataSetup";
+import { databaseAPI } from "./backend/db";
 import { fetchFrom } from "./backend/getData";
+import { logFile } from "./backend/log";
 
 cstData.writePath([
     "Leitstelle112",
@@ -72,3 +75,25 @@ export const TT_API_KEY = await fetchFrom.file('Leitstelle112/userdata', 'api.ke
     .then((r) => {
         return r;
     });
+
+async function showMissionsOnMap() {
+    const allOpenMissions = await databaseAPI.select({
+        database: {
+            name: "mission"
+        },
+        table: {
+            name: "active_missions",
+            options: "all"
+        }
+    })
+        .catch((err) => {
+            logFile.write('ERROR', err, session);
+            throw new Error(err)
+        });
+
+    allOpenMissions.forEach((element: any) => {
+        // console.log(element);
+    });
+}
+
+showMissionsOnMap();

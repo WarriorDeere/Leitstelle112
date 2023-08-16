@@ -1,10 +1,16 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { emergencyDialog } from "./init";
 import "./style.css";
 import { cstData } from './backend/dataSetup';
 import { logFile } from './backend/log';
 import { session } from './backend/backend_setup';
 import { databaseAPI } from './backend/db';
+import { createRoot } from 'react-dom/client';
+import { building } from './frontend/script/feature/building';
+import { TT_API_KEY } from './setup';
+import * as tts from '@tomtom-international/web-sdk-services';
+import * as ttm from '@tomtom-international/web-sdk-maps';
+import SearchBox from '@tomtom-international/web-sdk-plugin-searchbox';
+import { map } from './frontend/script/init/map';
 
 type defaultItemsData = {
     data: renderDialogFalse | renderDialogTrue
@@ -17,8 +23,39 @@ type renderDialogFalse = {
 type renderDialogTrue = {
     validation_dialog: true
     dialog_data: {
-        class: string
+        className: string
     }
+}
+
+type KeyValidationData = {
+    data: {
+        className: string;
+    };
+};
+
+type DialogHeadType = {
+    "dialog": {
+        "id": string,
+        "title": string,
+        "dialogDOM": HTMLDialogElement
+    }
+}
+
+type DialogBodyType = {
+    "dialog":
+    {
+        "id": string
+        "type": "missions" | "buildings"
+    }
+    "process"?: any
+}
+
+type allMissionsReturn = {
+    mission_caller: string
+    mission_text: string
+    mission_title: string
+    mission_type: string
+    mission_uuid: string
 }
 
 export function DefaultItems({ data }: defaultItemsData) {
@@ -30,7 +67,7 @@ export function DefaultItems({ data }: defaultItemsData) {
                     <Skillbar />
                 </span>
                 <dialog id="dialog-template"></dialog>
-                <KeyValidationDialog data={{ class: data.dialog_data.class }} />
+                <KeyValidationDialog data={{ className: data.dialog_data.className }} />
             </>
         )
     } else {
@@ -45,12 +82,6 @@ export function DefaultItems({ data }: defaultItemsData) {
         );
     }
 }
-
-type KeyValidationData = {
-    data: {
-        class: string;
-    };
-};
 
 export function KeyValidationDialog({ data }: KeyValidationData) {
     const dialogRef = useRef<HTMLDialogElement | null>(null);
@@ -82,7 +113,7 @@ export function KeyValidationDialog({ data }: KeyValidationData) {
     }, [handleCloseModal]);
 
     return (
-        <dialog ref={dialogRef} className={data.class} id='validation-dialog'>
+        <dialog ref={dialogRef} className={data.className} id='validation-dialog'>
             <div className="desc">
                 <h2>API-Key</h2>
                 <p>Bitte gib deinen Key ein, um fortzufahren</p>
@@ -156,7 +187,7 @@ export function Navigation() {
                 <NavigationButton data={{ iconName: "support_agent", tooltip: "Funk", buttonId: "radio" }}></NavigationButton>
             </div>
             <div className="sidebar-item">
-                <NavigationButton data={{ iconName: "apartment", tooltip: "Gebäude", buttonId: "building" }}></NavigationButton>
+                <NavigationButton data={{ iconName: "apartment", tooltip: "Gebäude", buttonId: "building", execute: () => { buildingDialog() } }}></NavigationButton>
             </div>
             <div className="sidebar-item">
                 <NavigationButton data={{ iconName: "hub", tooltip: "Verwaltung", buttonId: "new" }}></NavigationButton>
@@ -182,12 +213,20 @@ function NavigationButton({ data }: any) {
     );
 }
 
-type DialogHeadType = {
-    "dialog": {
-        "id": string,
-        "title": string,
-        "dialogDOM": HTMLDialogElement
-    }
+function emergencyDialog() {
+    const dialogRoot = createRoot(document.querySelector('#dialog-template') as HTMLDialogElement);
+    const dialogTemplate = document.querySelector('#dialog-template') as HTMLDialogElement;
+    dialogTemplate.classList.add('dialog');
+    const dialogId = crypto.randomUUID();
+
+    dialogRoot.render(
+        <>
+            <DialogHead dialog={{ id: `${dialogId}`, title: 'Einsätze', dialogDOM: dialogTemplate }} />
+            <DialogBody dialog={{ id: `${dialogId}`, type: 'missions' }} />
+        </>
+    );
+
+    dialogTemplate.showModal();
 }
 
 export function DialogHead({ dialog }: DialogHeadType) {
@@ -206,41 +245,57 @@ export function DialogHead({ dialog }: DialogHeadType) {
     );
 }
 
-type DialogBodyType = {
-    "dialog": {
-        "id": string,
-        "type": string
-    }
-}
-
-export function DialogBody({ dialog }: DialogBodyType) {
-    const dialogContentId = `content-${dialog.id}`;
-
+export function DialogBody({ dialog, process }: DialogBodyType) {
     switch (dialog.type) {
-        case "mission":
+        case "missions":
             return (
-                <article className="dialog-item" id={dialogContentId}>
+                <article className="dialog-item" id={`content-${dialog.id}`}>
                     <MissionItem />
+                </article>
+            );
+
+        case "buildings":
+            return (
+                <article className='dialog-item' id={`content-${dialog.id}`}>
+                    <section className="buildings">
+                        <div className="group-item">
+                            <button className="dialog-btn" id="new-building" onClick={process}>
+                                <span className="icon material-symbols-outlined">
+                                    add
+                                </span>
+                                <span className="dialog-btn-title">neues Gebäude</span>
+                            </button>
+                            <button className="dialog-btn" id="manage-buildings" disabled>
+                                <span className="icon material-symbols-outlined">
+                                    edit
+                                </span>
+                                <span className="dialog-btn-title">Gebäude bearbeiten</span>
+                            </button>
+                        </div>
+                        <div className="buildings-table-container">
+                            <table className="building-table">
+                                <thead>
+                                    <tr>
+                                        <th>Wache</th>
+                                        <th>Einsatzgebiet</th>
+                                    </tr>
+                                </thead>
+                                <tbody id={`list-${dialog.id}`}></tbody>
+                            </table>
+                        </div>
+                    </section>
                 </article>
             );
 
         default:
             return (
-                <article className="dialog-item" id={dialogContentId}>
+                <article className="dialog-item">
                     <div className="debug-container">
                         <DebugItem />
                     </div>
                 </article>
             );
     }
-}
-
-type allMissionsReturn = {
-    mission_caller: string
-    mission_text: string
-    mission_title: string
-    mission_type: string
-    mission_uuid: string
 }
 
 async function pushMissions(): Promise<allMissionsReturn[]> {
@@ -258,19 +313,14 @@ async function pushMissions(): Promise<allMissionsReturn[]> {
             throw new Error(err)
         });
 
-    console.log(allOpenMissions);
-
     return allOpenMissions;
 }
 
 const openMissions = await pushMissions();
 
 function MissionItem() {
-    openMissions.forEach(mission => {
-        console.log(mission);
-    })
-    const missionItems = openMissions
-        .map(mission =>
+    const missionItems =
+        openMissions.map(mission =>
             <div className="mission-container" id={`mission-container-${mission.mission_uuid}`} key={mission.mission_uuid}>
                 <div className="mission-head">
                     <div className="mission-icon">
@@ -291,6 +341,7 @@ function MissionItem() {
                 </div>
             </div>
         )
+
     return (
         <>
             {missionItems}
@@ -303,3 +354,166 @@ function DebugItem() {
         <p>How did we get here? Nobody knows...</p>
     )
 }
+
+function buildingDialog() {
+    const dialogRoot = createRoot(document.querySelector('#dialog-template') as HTMLDialogElement);
+    const dialogTemplate = document.querySelector('#dialog-template') as HTMLDialogElement;
+    dialogTemplate.classList.add('dialog');
+    const dialogId = crypto.randomUUID();
+
+    dialogRoot.render(
+        <>
+            <DialogHead dialog={{ id: `${dialogId}`, title: 'Gebäude', dialogDOM: dialogTemplate }} />
+            <DialogBody dialog={{ id: `${dialogId}`, type: 'buildings' }} process={() => {
+                dialogTemplate.close();
+                building.add();
+            }} />
+        </>
+    );
+
+    dialogTemplate.showModal();
+}
+
+export function BuildingSceneUi() {
+    const searchBox = new SearchBox(tts.services, {
+        idleTimePress: 1000,
+        minNumberOfCharacters: 2,
+        searchOptions: {
+            key: TT_API_KEY,
+            language: 'de-DE',
+            countrySet: 'DE'
+        },
+        labels: {
+            placeholder: 'Addresse',
+            noResultsMessage: 'Kein Ergebnis.'
+        },
+        filterSearchResults: (result: void): boolean => {
+            // @ts-ignore
+            switch (result.type) {
+                case 'POI':
+                    return false;
+                case 'Address':
+                    return true;
+                default:
+                    return true;
+            }
+        }
+    })
+
+    type SearchBoxResult = {
+        "type": string,
+        "id": string,
+        "score": number,
+        "address": {
+            "streetNumber": string,
+            "streetName": string,
+            "municipality": string,
+            "countrySecondarySubdivision": string,
+            "countrySubdivision": string,
+            "postalCode": string,
+            "countryCode": string,
+            "country": string,
+            "countryCodeISO3": string,
+            "freeformAddress": string,
+            "localName": string
+        },
+        "position": {
+            "lng": number,
+            "lat": number
+        },
+        "viewport": {
+            "topLeftPoint": {
+                "lng": number,
+                "lat": number
+            },
+            "btmRightPoint": {
+                "lng": number,
+                "lat": number
+            }
+        },
+        "entryPoints": [
+            {
+                "type": "main",
+                "position": {
+                    "lng": number,
+                    "lat": number
+                }
+            }
+        ],
+        "__resultListIdx__": number
+    }
+
+    searchBox.on('tomtom.searchbox.resultselected', (tar) => {
+        // @ts-expect-error
+        const result: SearchBoxResult = tar.data.result;
+        const resultMarker = new ttm.Marker();
+        const resultToolHint = new ttm.Popup({ anchor: 'top' });
+
+        map.panTo(result.position, { animate: true })
+        resultToolHint.setText(result.address.freeformAddress);
+        resultMarker.setLngLat(result.position).addTo(map);
+
+        resultMarker.setPopup(resultToolHint);
+        resultMarker.on('click', () => {
+            resultToolHint.addTo(map);
+        })
+    })
+
+    const searchBoxDOMRef = useRef<HTMLSpanElement>(null);
+
+    useEffect(() => {
+        if (searchBoxDOMRef.current) {
+            const searchBoxDOM: HTMLElement = searchBox.getSearchBoxHTML();
+            searchBoxDOMRef.current.appendChild(searchBoxDOM);
+        }
+    }, []);
+
+    return (
+        <div className="search-box">
+            <p className="user-hint">Die Ergebnisse werden mit einem Marker auf der Karte markiert.</p>
+            <br />
+            <p className="user-hint">Diesen kannst du jederzeit verschieben, die Addresse wird automatisch aktualisiert.</p>
+            <span ref={searchBoxDOMRef}></span>
+        </div>
+    );
+}
+
+// function SearchResultItem(props: { results: any[] }) {
+
+//     map.triggerRepaint();
+
+//     for (let i = 0; i < props.results.length; i++) {
+
+//         const resultMapMarker = new ttm.Marker();
+//         const resultToolHint = new ttm.Popup({ anchor: 'top' });
+
+//         resultToolHint.setText(props.results[i].address?.freeformAddress);
+
+//         resultMapMarker.setLngLat(props.results[i].position).addTo(map);
+
+//         resultMapMarker.setPopup(resultToolHint);
+//         resultMapMarker.on('click', () => {
+//             resultToolHint.addTo(map);
+//         })
+
+
+//         if (i === 0) {
+//             map.panTo(props.results[i].position, { animate: true })
+//         }
+
+//     }
+
+//     const bestMatchArray = props.results.slice(0, 3);
+
+//     return (
+//         <div className="result-area" id='result-container'>
+//             <div className="best-match-container">
+//                 {bestMatchArray.map((result, index) => (
+//                     <div className="best-item" key={index}>
+//                         {result.address.freeformAddress}
+//                     </div>
+//                 ))}
+//             </div>
+//         </div>
+//     );
+// }

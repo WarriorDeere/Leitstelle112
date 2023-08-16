@@ -5,12 +5,12 @@ import { WebviewWindow } from '@tauri-apps/api/window';
 
 const mainWindow = WebviewWindow.getByLabel('app-window')!;
 
-await mainWindow.isMaximized()
-    .then((r) => {
-        if (!r) {
-            // mainWindow.maximize();
-        }
-    });
+// await mainWindow.isMaximized()
+//     .then((r) => {
+//         if (!r) {
+//             mainWindow.maximize();
+//         }
+//     });
 
 document.addEventListener('DOMContentLoaded', async () => {
     await mainWindow.show();
