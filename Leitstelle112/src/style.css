@@ -1207,8 +1207,116 @@ p {
   left: 0;
   z-index: 99;
   margin: 2rem;
-  padding: 1rem;
+  padding: 1.25rem;
   background-color: white;
   border-radius: .5rem;
   box-shadow: 0 0 2rem 0 rgba(0, 0, 0, 0.75);
+  width: 35rem;
+  min-height: 10rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.user-hint-container {
+  padding: .5rem;
+  background-color: var(--card);
+  border-radius: .25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.place-building-ui {
+  display: flex;
+  flex-direction: row;
+  gap: .5rem;
+  align-items: center;
+  justify-content: flex-end;
+  padding: .5rem;
+}
+
+.place-building-ui button {
+  all: unset;
+  padding: .5rem .75rem;
+  cursor: pointer;
+  color: white;
+  border-radius: .5rem;
+  transition: background-color .35s ease-in-out;
+  box-shadow: 0 0 .5rem 0 rgba(0, 0, 0, .3);
+  user-select: none;
+}
+
+.place-building-ui button:disabled {
+  cursor: not-allowed;
+  filter: contrast(50%) grayscale(30%);
+  scale: 95%;
+  box-shadow: none;
+}
+
+.place-building-ui .btn-cancel {
+  background-color: var(--red);
+}
+
+.place-building-ui .btn-next {
+  background-color: var(--light-green);
+}
+
+.place-building-ui .btn-cancel:hover {
+  background-color: var(--red-hover);
+}
+
+.place-building-ui .btn-next:hover {
+  background-color: var(--light-green-hover);
+}
+
+/* dropdownmenu */
+
+.user-in-text,
+.user-dropdown {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  margin: .5rem;
+}
+
+.user-in-text label,
+.user-dropdown label {
+  padding-left: .75rem;
+  font-size: .8rem;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.user-in-text input[type=text],
+.user-dropdown select {
+  all: unset;
+  background-color: var(--gray);
+  padding: .25rem .75rem;
+  border-radius: .75rem;
+  height: 2rem;
+  width: calc(100% - 1.75rem);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-dropdown select,
+.user-dropdown select option {
+  cursor: pointer !important;
+}
+
+.input-feedback {
+  display: none;
+  color: red;
+}
+
+.user-in-text input[type="text"]:invalid+.input-feedback {
+  display: flex;
+  flex-direction: row;
+  font-size: .75rem;
+  font-style: italic;
+  font-weight: 500;
+  padding: .25rem .75rem;
 }

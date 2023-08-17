@@ -153,3 +153,14 @@ export const databaseAPI = new class interactWithDB {
 //         options: "all"
 //     }
 // })
+
+// databaseAPI.insert({
+//     database: {
+//         name: 'items'
+//     },
+//     table: {
+//         name: 'buildings',
+//         columns: 'building_type, building_position, building_price, building_name',
+//         values: `'fire_brigade', '${result.position}', 'undefined', 'undefined'`
+//     }
+// })

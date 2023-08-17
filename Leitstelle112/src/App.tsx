@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import "./style.css";
 import { cstData } from './backend/dataSetup';
 import { logFile } from './backend/log';
@@ -56,6 +56,49 @@ type allMissionsReturn = {
     mission_title: string
     mission_type: string
     mission_uuid: string
+}
+
+type SearchBoxResult = {
+    "type": string,
+    "id": string,
+    "score": number,
+    "address": {
+        "streetNumber": string,
+        "streetName": string,
+        "municipality": string,
+        "countrySecondarySubdivision": string,
+        "countrySubdivision": string,
+        "postalCode": string,
+        "countryCode": string,
+        "country": string,
+        "countryCodeISO3": string,
+        "freeformAddress": string,
+        "localName": string
+    },
+    "position": {
+        "lng": number,
+        "lat": number
+    },
+    "viewport": {
+        "topLeftPoint": {
+            "lng": number,
+            "lat": number
+        },
+        "btmRightPoint": {
+            "lng": number,
+            "lat": number
+        }
+    },
+    "entryPoints": [
+        {
+            "type": "main",
+            "position": {
+                "lng": number,
+                "lat": number
+            }
+        }
+    ],
+    "__resultListIdx__": number
 }
 
 export function DefaultItems({ data }: defaultItemsData) {
@@ -375,145 +418,199 @@ function buildingDialog() {
 }
 
 export function BuildingSceneUi() {
+    const [selectedResult, setSelectedResult] = useState(null);
+    const [step, setStep] = useState("submitAddress");
+    const [selectedBuildingType, setSelectedBuildingType] = useState("debug");
+    const [resultMarkerState, setResultMarker] = useState<ttm.Marker | null>(null);
+    const [isFormComplete, setIsFormComplete] = useState(false);
+
     const searchBox = new SearchBox(tts.services, {
-        idleTimePress: 1000,
+        idleTimePress: 800,
         minNumberOfCharacters: 2,
         searchOptions: {
             key: TT_API_KEY,
             language: 'de-DE',
-            countrySet: 'DE'
+            countrySet: 'DE',
+            idxSet: 'PAD,Str'
         },
         labels: {
             placeholder: 'Addresse',
             noResultsMessage: 'Kein Ergebnis.'
         },
-        filterSearchResults: (result: void): boolean => {
-            // @ts-ignore
-            switch (result.type) {
-                case 'POI':
-                    return false;
-                case 'Address':
-                    return true;
-                default:
-                    return true;
-            }
-        }
     })
 
-    type SearchBoxResult = {
-        "type": string,
-        "id": string,
-        "score": number,
-        "address": {
-            "streetNumber": string,
-            "streetName": string,
-            "municipality": string,
-            "countrySecondarySubdivision": string,
-            "countrySubdivision": string,
-            "postalCode": string,
-            "countryCode": string,
-            "country": string,
-            "countryCodeISO3": string,
-            "freeformAddress": string,
-            "localName": string
-        },
-        "position": {
-            "lng": number,
-            "lat": number
-        },
-        "viewport": {
-            "topLeftPoint": {
-                "lng": number,
-                "lat": number
-            },
-            "btmRightPoint": {
-                "lng": number,
-                "lat": number
-            }
-        },
-        "entryPoints": [
-            {
-                "type": "main",
-                "position": {
-                    "lng": number,
-                    "lat": number
-                }
-            }
-        ],
-        "__resultListIdx__": number
-    }
-
     searchBox.on('tomtom.searchbox.resultselected', (tar) => {
+        const resultMarker = new ttm.Marker({ draggable: true });
+        const resultToolHint = new ttm.Popup({ anchor: 'top' });
         // @ts-expect-error
         const result: SearchBoxResult = tar.data.result;
-        const resultMarker = new ttm.Marker();
-        const resultToolHint = new ttm.Popup({ anchor: 'top' });
 
         map.panTo(result.position, { animate: true })
-        resultToolHint.setText(result.address.freeformAddress);
-        resultMarker.setLngLat(result.position).addTo(map);
-
+        resultToolHint.setText(result.address.freeformAddress.replace('undefined', ''));
+        resultMarker.setLngLat(result.position);
         resultMarker.setPopup(resultToolHint);
+        resultMarker.addTo(map);
+        setResultMarker(resultMarker);
+
+        setIsFormComplete(true);
+
         resultMarker.on('click', () => {
             resultToolHint.addTo(map);
         })
+
+        resultMarker.on('dragstart', () => {
+            resultToolHint.remove();
+        })
+
+        resultMarker.on('dragend', () => {
+            const newPosition = resultMarker.getLngLat();
+            tts.services.reverseGeocode({
+                key: TT_API_KEY,
+                position: newPosition
+            })
+                .then((r) => {
+                    resultToolHint.setText(r.addresses[0].address.freeformAddress.replace('undefined', ''))
+                    resultToolHint.addTo(map);
+                })
+                .catch((err) => {
+                    throw new Error(err);
+                })
+        })
+
+        handleResultSelected(result);
     })
+
+    const handleResultSelected = (result: any) => {
+        setSelectedResult(result);
+    };
+
+    const handleCancel = () => {
+
+    };
+
+    const handleNext = () => {
+        if (step === "submitAddress" && resultMarkerState) {
+            resultMarkerState.setDraggable(false);
+            setStep("detailBuilding");
+        } else if (step === "detailBuilding") {
+            console.log('test');
+        }
+    };
+
+    const handleBuildingTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedBuildingType(event.target.value);
+        setIsFormComplete(false);
+        if (resultMarkerState) {
+            const newBuildingPosition = resultMarkerState.getLngLat();
+            resultMarkerState.remove()
+
+            switch (event.target.value) {
+                case 'fire':
+                    const fireBuildingMarker = new ttm.Marker({ color: 'rgb(255, 0, 0)' });
+                    fireBuildingMarker.remove();
+                    fireBuildingMarker.setLngLat(newBuildingPosition).addTo(map);
+                    break;
+
+                case 'volunteer':
+                    const volunteerBuildingMarker = new ttm.Marker({ color: 'rgb(255, 150, 0)' });
+                    volunteerBuildingMarker.remove();
+                    volunteerBuildingMarker.setLngLat(newBuildingPosition).addTo(map);
+                    break;
+
+                default:
+                    const debugBuildingMarker = new ttm.Marker();
+                    debugBuildingMarker.remove();
+                    debugBuildingMarker.setLngLat(newBuildingPosition).addTo(map);
+                    break;
+            }
+        }
+    };
+
+    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newName = event.target.value;
+        const isValidName = /^[A-Za-z0-9-_]*$/.test(newName);
+        setIsFormComplete(isValidName && newName !== "" && selectedBuildingType !== 'debug');
+    };
+
 
     const searchBoxDOMRef = useRef<HTMLSpanElement>(null);
 
     useEffect(() => {
         if (searchBoxDOMRef.current) {
-            const searchBoxDOM: HTMLElement = searchBox.getSearchBoxHTML();
+            const searchBoxDOM = searchBox.getSearchBoxHTML();
             searchBoxDOMRef.current.appendChild(searchBoxDOM);
         }
     }, []);
 
+    const SubmitAddress = () => (
+        <>
+            <p className="user-hint">Verschiebe den Marker um den Standort anzupassen.</p>
+            <br></br>
+            <p className="user-hint">Aktuelle Addresse:</p>
+        </>
+    );
+
+    const DetailBuilding = () => (
+        <>
+            <div className="user-in-text">
+                <label htmlFor='building-name' className="user-hint">gebäudename</label>
+                <input
+                    name="building-name"
+                    type="text"
+                    placeholder="Gebäudename"
+                    onBlur={handleNameChange}
+                    pattern="^[A-Za-z0-9_\-]*$"
+                    required
+                    className="building-name-input"
+                />
+                <span className="input-feedback">
+                    Es sind nur Buchstaben, Zahlen, Bindestriche und Unterstriche erlaubt!
+                </span>
+            </div>
+            <div className="user-dropdown">
+                <label htmlFor='building-type' className="user-hint">gebäudetyp</label>
+                <select name="building-type" id="building-type" value={selectedBuildingType} onChange={handleBuildingTypeChange}>
+                    <option value="fire">Berufsfeuerwehr</option>
+                    <option value="volunteer">Freiwillige Feuerwehr</option>
+                    <option value="debug">Debug Building</option>
+                </select>
+            </div>
+        </>
+    );
+
+    const StepComponent = () => {
+        switch (step) {
+            case "submitAddress":
+                return <SubmitAddress />;
+            case "detailBuilding":
+                return <DetailBuilding />;
+            default:
+                return null;
+        }
+    };
+
     return (
         <div className="search-box">
-            <p className="user-hint">Die Ergebnisse werden mit einem Marker auf der Karte markiert.</p>
-            <br />
-            <p className="user-hint">Diesen kannst du jederzeit verschieben, die Addresse wird automatisch aktualisiert.</p>
-            <span ref={searchBoxDOMRef}></span>
+            <div className="user-hint-container">
+                {
+                    selectedResult
+                        ? (
+                            <StepComponent />
+                        )
+                        : (
+                            <>
+                                <p className="user-hint">Klicke ein Ergebnis an, es wird mit einem Marker auf der Karte angezeigt.</p>
+                                <br />
+                                <p className="user-hint">Diesen kannst du jederzeit verschieben, die Adresse wird automatisch aktualisiert.</p>
+                                <span ref={searchBoxDOMRef}></span>
+                            </>
+                        )
+                }
+            </div>
+            <div className="place-building-ui">
+                <button className="btn-cancel" onClick={handleCancel}>Abbrechen</button>
+                <button className="btn-next" onClick={handleNext} disabled={!isFormComplete}>Weiter</button>
+            </div>
         </div>
     );
 }
-
-// function SearchResultItem(props: { results: any[] }) {
-
-//     map.triggerRepaint();
-
-//     for (let i = 0; i < props.results.length; i++) {
-
-//         const resultMapMarker = new ttm.Marker();
-//         const resultToolHint = new ttm.Popup({ anchor: 'top' });
-
-//         resultToolHint.setText(props.results[i].address?.freeformAddress);
-
-//         resultMapMarker.setLngLat(props.results[i].position).addTo(map);
-
-//         resultMapMarker.setPopup(resultToolHint);
-//         resultMapMarker.on('click', () => {
-//             resultToolHint.addTo(map);
-//         })
-
-
-//         if (i === 0) {
-//             map.panTo(props.results[i].position, { animate: true })
-//         }
-
-//     }
-
-//     const bestMatchArray = props.results.slice(0, 3);
-
-//     return (
-//         <div className="result-area" id='result-container'>
-//             <div className="best-match-container">
-//                 {bestMatchArray.map((result, index) => (
-//                     <div className="best-item" key={index}>
-//                         {result.address.freeformAddress}
-//                     </div>
-//                 ))}
-//             </div>
-//         </div>
-//     );
-// }
