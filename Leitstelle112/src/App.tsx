@@ -17,13 +17,13 @@ type defaultItemsData = {
 };
 
 type renderDialogFalse = {
-    validation_dialog: false
+    show_user_modal: false
 }
 
 type renderDialogTrue = {
-    validation_dialog: true
-    dialog_data: {
-        className: string
+    show_user_modal: true
+    modal_data: {
+        modal_order: string[]
     }
 }
 
@@ -32,6 +32,12 @@ type KeyValidationData = {
         className: string;
     };
 };
+
+type FirstLoginData = {
+    data: {
+        menu: "type_language_select"
+    }
+}
 
 type DialogHeadType = {
     "dialog": {
@@ -58,61 +64,35 @@ type allMissionsReturn = {
     mission_uuid: string
 }
 
-type SearchBoxResult = {
-    "type": string,
-    "id": string,
-    "score": number,
-    "address": {
-        "streetNumber": string,
-        "streetName": string,
-        "municipality": string,
-        "countrySecondarySubdivision": string,
-        "countrySubdivision": string,
-        "postalCode": string,
-        "countryCode": string,
-        "country": string,
-        "countryCodeISO3": string,
-        "freeformAddress": string,
-        "localName": string
-    },
-    "position": {
-        "lng": number,
-        "lat": number
-    },
-    "viewport": {
-        "topLeftPoint": {
-            "lng": number,
-            "lat": number
-        },
-        "btmRightPoint": {
-            "lng": number,
-            "lat": number
-        }
-    },
-    "entryPoints": [
-        {
-            "type": "main",
-            "position": {
-                "lng": number,
-                "lat": number
+export function DefaultItems({ data }: defaultItemsData) {
+    if (data.show_user_modal == true) {
+        for (let i = 0; i < data.modal_data.modal_order.length; i++) {
+            switch (data.modal_data.modal_order[i]) {
+                case 'type_api_key':
+                    return (
+                        <>
+                            <span id="interface-layer">
+                                <Navigation />
+                                <Skillbar />
+                            </span>
+                            <dialog id="dialog-template"></dialog>
+                            <KeyValidationDialog data={{ className: 'validation-dialog' }} />
+                        </>
+                    );
+
+                case 'type_language_select':
+                    return (
+                        <>
+                            <span id="interface-layer">
+                                <Navigation />
+                                <Skillbar />
+                            </span>
+                            <dialog id="dialog-template"></dialog>
+                            <FirstLoginDialog data={{ menu: 'type_language_select' }} />
+                        </>
+                    );
             }
         }
-    ],
-    "__resultListIdx__": number
-}
-
-export function DefaultItems({ data }: defaultItemsData) {
-    if (data.validation_dialog == true) {
-        return (
-            <>
-                <span id="interface-layer">
-                    <Navigation />
-                    <Skillbar />
-                </span>
-                <dialog id="dialog-template"></dialog>
-                <KeyValidationDialog data={{ className: data.dialog_data.className }} />
-            </>
-        )
     } else {
         return (
             <>
@@ -123,6 +103,67 @@ export function DefaultItems({ data }: defaultItemsData) {
                 <dialog id="dialog-template"></dialog>
             </>
         );
+    }
+}
+
+function FirstLoginDialog({ data }: FirstLoginData) {
+    const dialogRef = useRef<HTMLDialogElement | null>(null);
+    const handleCloseModal = useCallback(() => {
+        if (dialogRef.current) {
+            dialogRef.current.close();
+            location.reload()
+        }
+    }, []);
+    useEffect(() => {
+        if (dialogRef.current) {
+            dialogRef.current.showModal();
+        }
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                handleCloseModal();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [handleCloseModal]);
+
+    switch (data.menu) {
+        case 'type_language_select':
+            return (
+                <dialog ref={dialogRef} className="language-select" id='lang-modal'>
+                    <div className="modal-inner-container">
+                        <div className="language-wheel" role='menu'>
+                            <span role='menuitem' defaultValue={'fr'} className="lang-item">
+                                French Français
+                                <span className="fi fi-fr"></span>
+                            </span>
+                            <span role='menuitem' defaultValue={'us'} className="lang-item">
+                                English English
+                                <span className="fi fi-us"></span>
+                            </span>
+                            <span role='menuitem' defaultValue={'de'} className="lang-item lang-item-active">
+                                German Deutsch
+                                <span className="fi fi-de"></span>
+                            </span>
+                            <span role='menuitem' defaultValue={'es'} className="lang-item">
+                                Spanish Español
+                                <span className="fi fi-es"></span>
+                            </span>
+                            <span role='menuitem' defaultValue={'pl'} className="lang-item">
+                                Polish Polski
+                                <span className="fi fi-pl"></span>
+                            </span>
+                        </div>
+                        <span className="lang-preview">Sprache</span>
+                    </div>
+                </dialog>
+            )
     }
 }
 

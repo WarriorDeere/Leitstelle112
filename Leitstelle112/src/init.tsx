@@ -4,20 +4,20 @@ import { TT_API_KEY } from "./setup.ts";
 
 const root = createRoot(document.querySelector('#react-ui') as HTMLElement);
 
-if (TT_API_KEY.length == 0) {
+if (TT_API_KEY.length > 0) {
     root.render(
         <>
-            <DefaultItems data={{ validation_dialog: true, dialog_data: { className: "validation-dialog" } }} />
+            <DefaultItems data={{ show_user_modal: true, modal_data: { modal_order: ["type_language_select"]} }} />
         </>
     );
 }
-else {
-    root.render(
-        <>
-            <DefaultItems data={{ validation_dialog: false }} />
-        </>
-    );
-}
+// else {
+//     root.render(
+//         <>
+//             <DefaultItems data={{ validation_dialog: false }} />
+//         </>
+//     );
+// }
 
 export function addBuildingMenuInterface() {
     root.render(
