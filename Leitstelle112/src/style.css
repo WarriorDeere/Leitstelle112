@@ -1270,7 +1270,7 @@ p {
   background-color: var(--light-green-hover);
 }
 
-/* dropdownmenu */
+/* mision area ui */
 
 .user-in-text,
 .user-dropdown {
@@ -1281,8 +1281,9 @@ p {
   margin: .5rem;
 }
 
-.user-in-text label,
-.user-dropdown label {
+.mission-area-container .user-hint,
+.user-in-text .user-hint,
+.user-dropdown .user-hint {
   padding-left: .75rem;
   font-size: .8rem;
   text-transform: uppercase;

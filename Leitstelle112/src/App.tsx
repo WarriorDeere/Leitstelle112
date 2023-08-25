@@ -477,7 +477,22 @@ export function BuildingSceneUi() {
         labels: {
             placeholder: 'Addresse',
             noResultsMessage: 'Kein Ergebnis.'
+        }
+    })
+
+    const areaSearchbox = new SearchBox(tts.services, {
+        idleTimePress: 800,
+        minNumberOfCharacters: 2,
+        searchOptions: {
+            key: TT_API_KEY,
+            language: 'de-DE',
+            countrySet: 'DE',
+            idxSet: 'Geo'
         },
+        labels: {
+            placeholder: 'Einsatzgebiet (Stadtteil, Gemeinde, Landkreis, ...)',
+            noResultsMessage: 'Kein Ergebnis.'
+        }
     })
 
     searchBox.on('tomtom.searchbox.resultselected', (tar) => {
@@ -520,6 +535,58 @@ export function BuildingSceneUi() {
 
         handleResultSelected(result);
     })
+
+    areaSearchbox.on('tomtom.searchbox.resultselected', (r) => {
+
+        //@ts-expect-error
+        const areaId = r.data.result.dataSources.geometry.id;
+        //@ts-expect-error
+        map.panTo(r.data.result.position, { animate: true });
+        //@ts-expect-error
+        var boundingBox = r.data.result.boundingBox || r.data.result.viewport;
+        boundingBox = new tts.LngLatBounds(
+            [boundingBox.topLeftPoint.lng, boundingBox.btmRightPoint.lat],
+            [boundingBox.btmRightPoint.lng, boundingBox.topLeftPoint.lat]
+        );
+        map.fitBounds(boundingBox, { padding: 100, linear: true });
+
+        tts.services.additionalData({
+            key: TT_API_KEY,
+            geometriesZoom: 22,
+            geometries: [areaId]
+        })
+            .then((r) => {
+                for (let i = 0; i < r.additionalData.length; i++) {
+                    const geoJson = r.additionalData[0].geometryData
+                    console.log(geoJson);
+                    map.addLayer({
+                        id: 'polygon-y',
+                        type: 'fill',
+                        source: {
+                            type: 'geojson',
+                            data: geoJson
+                        },
+                        paint: {
+                            'fill-color': '#ff0000',
+                            'fill-opacity': .35
+                        }
+                    });
+
+                    map.addLayer({
+                        id: 'line-y',
+                        type: 'line',
+                        source: {
+                            type: 'geojson',
+                            data: geoJson
+                        },
+                        paint: {
+                            'line-color': '#ff0000',
+                            'line-width': 1
+                        }
+                    });
+                }
+            })
+    });
 
     const handleResultSelected = (result: any) => {
         setSelectedResult(result);
@@ -573,13 +640,17 @@ export function BuildingSceneUi() {
         setIsFormComplete(isValidName && newName !== "" && selectedBuildingType !== 'debug');
     };
 
-
     const searchBoxDOMRef = useRef<HTMLSpanElement>(null);
+    const areaSearchboxRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (searchBoxDOMRef.current) {
             const searchBoxDOM = searchBox.getSearchBoxHTML();
             searchBoxDOMRef.current.appendChild(searchBoxDOM);
+        }
+        if (areaSearchboxRef.current) {
+            const areaSearchboxDOM = areaSearchbox.getSearchBoxHTML();
+            areaSearchboxRef.current.appendChild(areaSearchboxDOM);
         }
     }, []);
 
@@ -591,33 +662,47 @@ export function BuildingSceneUi() {
         </>
     );
 
-    const DetailBuilding = () => (
-        <>
-            <div className="user-in-text">
-                <label htmlFor='building-name' className="user-hint">gebäudename</label>
-                <input
-                    name="building-name"
-                    type="text"
-                    placeholder="Gebäudename"
-                    onBlur={handleNameChange}
-                    pattern="^[A-Za-z0-9_\-]*$"
-                    required
-                    className="building-name-input"
-                />
-                <span className="input-feedback">
-                    Es sind nur Buchstaben, Zahlen, Bindestriche und Unterstriche erlaubt!
-                </span>
-            </div>
-            <div className="user-dropdown">
-                <label htmlFor='building-type' className="user-hint">gebäudetyp</label>
-                <select name="building-type" id="building-type" value={selectedBuildingType} onChange={handleBuildingTypeChange}>
-                    <option value="fire">Berufsfeuerwehr</option>
-                    <option value="volunteer">Freiwillige Feuerwehr</option>
-                    <option value="debug">Debug Building</option>
-                </select>
-            </div>
-        </>
-    );
+
+    const DetailBuilding = () => {
+        useEffect(() => {
+            if (areaSearchboxRef.current) {
+                const areaSearchboxDOM = areaSearchbox.getSearchBoxHTML();
+                areaSearchboxRef.current.appendChild(areaSearchboxDOM);
+            }
+        }, []);
+
+        return (
+            <>
+                <div className="user-in-text">
+                    <label htmlFor='building-name' className="user-hint">gebäudename</label>
+                    <input
+                        name="building-name"
+                        type="text"
+                        placeholder="Gebäudename"
+                        onBlur={handleNameChange}
+                        pattern="^[A-Za-z0-9_\-]*$"
+                        required
+                        className="building-name-input"
+                    />
+                    <span className="input-feedback">
+                        Es sind nur Buchstaben, Zahlen, Bindestriche und Unterstriche erlaubt!
+                    </span>
+                </div>
+                <div className="user-dropdown">
+                    <label htmlFor='building-type' className="user-hint">gebäudetyp</label>
+                    <select name="building-type" id="building-type" value={selectedBuildingType} onChange={handleBuildingTypeChange}>
+                        <option value="fire">Berufsfeuerwehr</option>
+                        <option value="volunteer">Freiwillige Feuerwehr</option>
+                        <option value="debug">Debug Building</option>
+                    </select>
+                </div>
+                <div className="mission-area-container">
+                    <span className="user-hint">einsatzgebiet</span>
+                    <div ref={areaSearchboxRef}></div>
+                </div>
+            </>
+        );
+    };
 
     const StepComponent = () => {
         switch (step) {
