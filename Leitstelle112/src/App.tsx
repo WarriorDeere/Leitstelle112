@@ -64,6 +64,16 @@ type allMissionsReturn = {
     mission_uuid: string
 }
 
+type buildingMenuFormData = {
+    building_name: string,
+    building_type: string,
+    building_geo: {
+        building_position: tts.LngLatLike,
+        building_area: object
+    },
+    building_id: string
+}
+
 export function DefaultItems({ data }: defaultItemsData) {
     if (data.show_user_modal == true) {
         for (let i = 0; i < data.modal_data.modal_order.length; i++) {
@@ -465,6 +475,8 @@ export function BuildingSceneUi() {
     const [resultMarkerState, setResultMarker] = useState<ttm.Marker | null>(null);
     const [isFormComplete, setIsFormComplete] = useState(false);
 
+    const [buildingName, setBuildingName] = useState('');
+
     const searchBox = new SearchBox(tts.services, {
         idleTimePress: 800,
         minNumberOfCharacters: 2,
@@ -543,12 +555,12 @@ export function BuildingSceneUi() {
         //@ts-expect-error
         map.panTo(r.data.result.position, { animate: true });
         //@ts-expect-error
-        var boundingBox = r.data.result.boundingBox || r.data.result.viewport;
-        boundingBox = new tts.LngLatBounds(
-            [boundingBox.topLeftPoint.lng, boundingBox.btmRightPoint.lat],
-            [boundingBox.btmRightPoint.lng, boundingBox.topLeftPoint.lat]
-        );
-        map.fitBounds(boundingBox, { padding: 100, linear: true });
+
+        const bounding_roots = r.data.result.boundingBox || r.data.result.viewport;
+        if (bounding_roots) {
+            const boundingBox = new ttm.LngLatBounds([bounding_roots.topLeftPoint.lng, bounding_roots.btmRightPoint.lat], [bounding_roots.btmRightPoint.lng, bounding_roots.topLeftPoint.lat])
+            map.fitBounds(boundingBox, { padding: 100, linear: true });
+        }
 
         tts.services.additionalData({
             key: TT_API_KEY,
@@ -558,9 +570,17 @@ export function BuildingSceneUi() {
             .then((r) => {
                 for (let i = 0; i < r.additionalData.length; i++) {
                     const geoJson = r.additionalData[0].geometryData
-                    console.log(geoJson);
+
+                    if (map.getLayer(`polygon-mission_area${i}`)) {
+                        map.removeLayer(`polygon-mission_area${i}`);
+                    }
+
+                    if (map.getLayer(`line-mission_area`)) {
+                        map.removeLayer(`line-mission_area`);
+                    }
+
                     map.addLayer({
-                        id: 'polygon-y',
+                        id: `polygon-mission_area`,
                         type: 'fill',
                         source: {
                             type: 'geojson',
@@ -573,7 +593,7 @@ export function BuildingSceneUi() {
                     });
 
                     map.addLayer({
-                        id: 'line-y',
+                        id: `line-mission_area`,
                         type: 'line',
                         source: {
                             type: 'geojson',
@@ -601,7 +621,16 @@ export function BuildingSceneUi() {
             resultMarkerState.setDraggable(false);
             setStep("detailBuilding");
         } else if (step === "detailBuilding") {
-            console.log('test');
+            const formData: buildingMenuFormData = {
+                building_name: buildingName,
+                building_type: selectedBuildingType,
+                building_geo: {
+                    building_position: new ttm.LngLat(-122.420679, 37.772537),
+                    building_area: {}
+                },
+                building_id: 'abc12-de345-f67hi'
+            };
+            console.log(formData);
         }
     };
 
@@ -619,7 +648,7 @@ export function BuildingSceneUi() {
                     fireBuildingMarker.setLngLat(newBuildingPosition).addTo(map);
                     break;
 
-                case 'volunteer':
+                case 'fire_volunteer':
                     const volunteerBuildingMarker = new ttm.Marker({ color: 'rgb(255, 150, 0)' });
                     volunteerBuildingMarker.remove();
                     volunteerBuildingMarker.setLngLat(newBuildingPosition).addTo(map);
@@ -636,7 +665,10 @@ export function BuildingSceneUi() {
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newName = event.target.value;
-        const isValidName = /^[A-Za-z0-9-_]*$/.test(newName);
+        const isValidName = /^[A-Za-z0-9-_\säöüÄÖÜß]*$/.test(newName);
+        if (isValidName) {
+            setBuildingName(newName);
+        }
         setIsFormComplete(isValidName && newName !== "" && selectedBuildingType !== 'debug');
     };
 
@@ -679,7 +711,8 @@ export function BuildingSceneUi() {
                         name="building-name"
                         type="text"
                         placeholder="Gebäudename"
-                        onBlur={handleNameChange}
+                        value={buildingName}
+                        onChange={handleNameChange}
                         pattern="^[A-Za-z0-9_\-]*$"
                         required
                         className="building-name-input"
@@ -692,7 +725,7 @@ export function BuildingSceneUi() {
                     <label htmlFor='building-type' className="user-hint">gebäudetyp</label>
                     <select name="building-type" id="building-type" value={selectedBuildingType} onChange={handleBuildingTypeChange}>
                         <option value="fire">Berufsfeuerwehr</option>
-                        <option value="volunteer">Freiwillige Feuerwehr</option>
+                        <option value="fire_volunteer">Freiwillige Feuerwehr</option>
                         <option value="debug">Debug Building</option>
                     </select>
                 </div>
