@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { BuildingSceneUi, DefaultItems } from "../src/app.tsx";
+import { BuildingSceneUi, DefaultItems } from "../src/App.tsx";
 import { TT_API_KEY } from "./setup.ts";
 
 const root = createRoot(document.querySelector('#react-ui') as HTMLElement);

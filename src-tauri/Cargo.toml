@@ -1,9 +1,9 @@
 [package]
-name = "Leitstelle112"
-version = "0.0.3"
+name = "leitstelle112"
+version = "0.0.4"
 description = "Leitstelle112 dev build"
 authors = ["Warrior Deere", "Arcavigi Interactive"]
-license = ""
+license = "CC-BY-NC-ND-4.0"
 repository = "https://github.com/WarriorDeere/Leitstelle112"
 edition = "2021"
 

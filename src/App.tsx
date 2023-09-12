@@ -74,6 +74,12 @@ type buildingMenuFormData = {
     building_id: string
 }
 
+type submitAddressData = {
+    data: {
+        address: string
+    }
+}
+
 export function DefaultItems({ data }: defaultItemsData) {
     if (data.show_user_modal == true) {
         for (let i = 0; i < data.modal_data.modal_order.length; i++) {
@@ -548,14 +554,10 @@ export function BuildingSceneUi() {
         handleResultSelected(result);
     })
 
-    areaSearchbox.on('tomtom.searchbox.resultselected', (r) => {
+    areaSearchbox.on('tomtom.searchbox.resultselected', (r: any) => {
 
-        //@ts-expect-error
         const areaId = r.data.result.dataSources.geometry.id;
-        //@ts-expect-error
         map.panTo(r.data.result.position, { animate: true });
-        //@ts-expect-error
-
         const bounding_roots = r.data.result.boundingBox || r.data.result.viewport;
         if (bounding_roots) {
             const boundingBox = new ttm.LngLatBounds([bounding_roots.topLeftPoint.lng, bounding_roots.btmRightPoint.lat], [bounding_roots.btmRightPoint.lng, bounding_roots.topLeftPoint.lat])
@@ -686,11 +688,11 @@ export function BuildingSceneUi() {
         }
     }, []);
 
-    const SubmitAddress = () => (
+    const SubmitAddress = ({ data }: submitAddressData) => (
         <>
             <p className="user-hint">Verschiebe den Marker um den Standort anzupassen.</p>
             <br></br>
-            <p className="user-hint">Aktuelle Addresse:</p>
+            <p className="user-hint">Aktuelle Addresse: {data.address}</p>
         </>
     );
 
@@ -740,7 +742,7 @@ export function BuildingSceneUi() {
     const StepComponent = () => {
         switch (step) {
             case "submitAddress":
-                return <SubmitAddress />;
+                return <SubmitAddress data={{ "address": step }} />;
             case "detailBuilding":
                 return <DetailBuilding />;
             default:

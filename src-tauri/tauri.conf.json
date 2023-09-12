@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "leitstelle112",
+    "productName": "Leitstelle112",
     "version": "0.0.4"
   },
   "tauri": {
