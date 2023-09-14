@@ -6,6 +6,12 @@
             "driver": "SQLite",
             "database": "C:\\Users\\Anwender\\AppData\\Roaming\\ArcavigiInteractive\\mission.db",
             "name": "Leitstelle112/mission"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "Leitstelle112/items",
+            "database": "C:\\Users\\Anwender\\AppData\\Roaming\\ArcavigiInteractive\\items.db"
         }
     ]
 }

@@ -16,6 +16,7 @@
     "@tomtom-international/web-sdk-services": "^6.23.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-draggable": "^4.4.5",
     "tauri-plugin-sql-api": "github:tauri-apps/tauri-plugin-sql#v1"
   },
   "devDependencies": {

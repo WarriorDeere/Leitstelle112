@@ -1445,3 +1445,37 @@ p {
   font-size: 2rem;
   color: white;
 }
+
+.developer-menu {
+  z-index: 999;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: white;
+  margin: 1rem;
+  padding: 2rem;
+  border-radius: .2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 0 1rem 0 black;
+}
+
+.developer-menu h3 {
+  padding: .5rem 0;
+  margin: 0;
+}
+
+.developer-menu button {
+  cursor: pointer;
+}
+
+.dev-menu-drag {
+  background-color: var(--gray);
+  cursor: move;
+  height: 1rem;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
