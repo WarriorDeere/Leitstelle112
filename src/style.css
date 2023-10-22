@@ -1452,7 +1452,7 @@ p {
   top: 0;
   left: 0;
   background-color: white;
-  margin: 1rem;
+  margin: 0;
   padding: 2rem;
   border-radius: .2rem;
   display: flex;

@@ -3,6 +3,23 @@ import { cstData } from "./backend/dataSetup";
 import { databaseAPI } from "./backend/db";
 import { fetchFrom } from "./backend/getData";
 import { logFile } from "./backend/log";
+import * as tts from '@tomtom-international/web-sdk-services';
+import * as ttm from '@tomtom-international/web-sdk-maps';
+import { map } from "./frontend/script/init/map";
+
+type buildingMenuFormData = {
+    building_name: string,
+    building_type: string,
+    building_geo: {
+        building_position: tts.LngLatLike
+    },
+    building_id: string
+}
+
+export const TT_API_KEY = await fetchFrom.file('Leitstelle112/userdata', 'api.key')
+    .then((r) => {
+        return r;
+    });
 
 cstData.writePath([
     "Leitstelle112",
@@ -71,11 +88,6 @@ cstData.writeFile([
     }
 ])
 
-export const TT_API_KEY = await fetchFrom.file('Leitstelle112/userdata', 'api.key')
-    .then((r) => {
-        return r;
-    });
-
 async function showMissionsOnMap() {
     const allOpenMissions = await databaseAPI.select({
         database: {
@@ -96,4 +108,30 @@ async function showMissionsOnMap() {
     });
 }
 
+async function showItemsOnMap() {
+    const allItems = await databaseAPI.select({
+        database: {
+            name: "items"
+        },
+        table: {
+            name: "buildings",
+            options: "all"
+        }
+    })
+        .catch((err) => {
+            logFile.write('ERROR', err, session);
+            throw new Error(err)
+        });
+
+    allItems.forEach((element: any) => {
+        console.log(element);
+        const buildingItem = new ttm.Marker({
+            color: "red"
+        });
+        buildingItem.setLngLat(element.building_position);
+        buildingItem.addTo(map);
+    });
+}
+
 showMissionsOnMap();
+showItemsOnMap();

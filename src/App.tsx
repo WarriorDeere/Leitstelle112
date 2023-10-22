@@ -11,7 +11,6 @@ import * as tts from '@tomtom-international/web-sdk-services';
 import * as ttm from '@tomtom-international/web-sdk-maps';
 import SearchBox from '@tomtom-international/web-sdk-plugin-searchbox';
 import { map } from './frontend/script/init/map';
-import { debugScript } from './backend/debug';
 import Draggable from 'react-draggable';
 
 type defaultItemsData = {
@@ -70,7 +69,7 @@ type buildingMenuFormData = {
     building_name: string,
     building_type: string,
     building_geo: {
-        building_position: tts.LngLatLike
+        building_position: string
     },
     building_id: string
 }
@@ -86,12 +85,17 @@ export function DeveloperMenu() {
     return (
         <Draggable
             handle=".dev-menu-drag"
-            defaultPosition={{ x: 5, y: 5 }}
+            defaultPosition={{ x: 25, y: 25 }}
+            bounds={'body'}
         >
             <div className="developer-menu">
                 <span className="dev-menu-drag"></span>
                 <h3>Developer Menu</h3>
-                <button onClick={debugScript}>Run Debug Script</button>
+                <button onClick={() => {
+                    import("../src/debug/debug.ts").then((module) => {
+                        module.default();
+                    })
+                }}>Run Debug Script</button>
             </div>
         </Draggable>
     );
@@ -642,14 +646,20 @@ export function BuildingSceneUi() {
             setStep("detailBuilding");
         } else if (step === "detailBuilding" && buildingPosition) {
             const uuid = crypto.randomUUID();
+            console.log(buildingPosition);
+            const positionStringfy = buildingPosition.toString();
             const formData: buildingMenuFormData = {
                 building_name: buildingName,
                 building_type: selectedBuildingType,
                 building_geo: {
-                    building_position: buildingPosition
+                    building_position: positionStringfy
                 },
                 building_id: uuid
             };
+
+            console.log('db ins');
+            console.log(formData);
+
             databaseAPI.insert({
                 database: {
                     name: 'items'
@@ -659,9 +669,10 @@ export function BuildingSceneUi() {
                     columns: 'building_type, building_position, building_price, building_name, building_id',
                     values: `'${formData.building_type}', '${formData.building_geo.building_position}', 'undefined', '${formData.building_name}', '${formData.building_id}'`
                 }
-            }).catch((err) => {
-                throw new Error(err)
             })
+                .catch((err) => {
+                    throw new Error(err)
+                })
         }
     };
 
